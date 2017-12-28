@@ -48,3 +48,4 @@ Thumbs.db
 
 # Secrets
 nginx/keys
+static/
