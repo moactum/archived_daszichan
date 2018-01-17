@@ -4,11 +4,13 @@ from daszichan.settings import INSTALLED_APPS, BASE_DIR, SECRET_KEY
 from rest_framework.settings import api_settings
 #BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+LANGUAGE_CODE = 'zh-cn'
 ALLOWED_HOSTS = ['*',]
 
 INSTALLED_APPS += [
 	'corsheaders',
 	'rest_framework',
+	'jingtum',
 	#'rest_framework_simplejwt.token_blacklist',
 	#'rest_framework.authtoken',
 ]
@@ -18,6 +20,7 @@ MIDDLEWARE = [
 	'corsheaders.middleware.CorsMiddleware',
 	#'whitenoise.middleware.WhiteNoiseMiddleware',
 	'django.contrib.sessions.middleware.SessionMiddleware',
+	'django.middleware.locale.LocaleMiddleware',
 	'django.middleware.common.CommonMiddleware',
 	'django.middleware.csrf.CsrfViewMiddleware',
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -35,8 +38,10 @@ DATABASES = {
 		'NAME': 'test',								  # Or path to database file if using sqlite3.
 		'HOST': 'localhost',						  # Set to empty string for localhost. Not used with sq
 		'USER': 'root',								# Not used with sqlite3.
-		'PASSWORD': 'root',				  # Not used with sqlite3.
+		#'PASSWORD': 'root',				  # Not used with sqlite3.
+		'PASSWORD': '',				  # Not used with sqlite3.
 		'PORT': '',
+		'OPTIONS': {'charset': 'utf8mb4'}
 	}
 }
 
@@ -98,3 +103,5 @@ USE_TZ =  True
 #)
 #CSRF_COOKIE_NAME = 'XSRF-TOKEN'
 #CSRF_HEADER_NAME = 'HTTP_X_XSRF_TOKEN'
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
+DATA_UPLOAD_MAX_MEMORY_SIZE = 26214400

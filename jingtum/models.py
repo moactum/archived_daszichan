@@ -32,21 +32,26 @@ class Wallet(models.Model):
 		ordering = ('address', )
 
 	def __str__(self):
+		#return "%s***%s" % (self.address[:5], self.address[-5:])
 		return self.address
 
-	def sync_transactions(self):
+	def sync_transactions(self, leger_limit=8000000, page_limit=2000, datetime_limit=datetime.datetime(2017,12,1)):
 		marker = {}
 		results_per_page = 200
 		page = 1
 		has_more = True
-		ledger_limit = 8000000
-		page_limit = 50
+		num_trans = 0
+		num_exists = 0
+		#ledger_limit = 8000000
+		#page_limit = 2000
 
 		if not self.agent_set.all():
 			raise ValueError("no agent associated")
 		agent = self.agent_set.all().first()
 
 		while has_more and page < page_limit:
+			num_trans = 0
+			num_exists = 0
 			if 'ledger' in marker.keys():
 				out = json.loads(subprocess.check_output("http 'https://api.jingtum.com/v2/accounts/%s/transactions?results_per_page=%s&marker={ledger:%s,seq:%s}'" % (self.address, results_per_page, marker['ledger'], marker['seq']),shell=True).decode())
 			else:
@@ -62,8 +67,13 @@ class Wallet(models.Model):
 			else:
 				if len(out['transactions']) < results_per_page:
 					has_more = False
-			transactions = list(filter(lambda x: 'type' in x.keys() and 'result' in x.keys() and 'amount' in x.keys() and 'memos' in x.keys() and type(x['amount']) == type({}) and x['result'] == 'tesSUCCESS' and 'currency' in x['amount'].keys() and 'issuer' in x['amount'].keys() and (x['amount']['currency'] == 'SWT' or (x['amount']['currency'] == 'CNY' and x['amount']['issuer'] == 'jaNg3d59VHUiZ2eV4ZSH4Qyh9hUdAjDrzA')), out['transactions']))
+			transactions = list(filter(lambda x: 'counterparty' in x.keys() and 'type' in x.keys() and (x['type'] == 'sent' or x['type'] == 'received') and 'result' in x.keys() and 'amount' in x.keys() and 'memos' in x.keys() and type(x['amount']) == type({}) and x['result'] == 'tesSUCCESS' and 'currency' in x['amount'].keys() and 'issuer' in x['amount'].keys() and ((x['amount']['currency'] == 'CNY' and x['amount']['issuer'] == 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or')), out['transactions']))
+			#transactions = list(filter(lambda x: 'counterparty' in x.keys() and 'type' in x.keys() and 'result' in x.keys() and 'amount' in x.keys() and 'memos' in x.keys() and type(x['amount']) == type({}) and x['result'] == 'tesSUCCESS' and 'currency' in x['amount'].keys() and 'issuer' in x['amount'].keys() and (x['amount']['currency'] == 'SWT' or (x['amount']['currency'] == 'CNY' and x['amount']['issuer'] == 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or')), out['transactions']))
 			for transaction in transactions:
+				num_trans += 1
+				if datetime.datetime.fromtimestamp(transaction['date']) < datetime_limit:
+					has_more = False
+					break
 				print("%s\t%s" % (transaction['hash'], transaction['memos']))
 				trans, created = Transaction.objects.get_or_create(hash_sum=transaction['hash'])
 				if created:
@@ -76,12 +86,15 @@ class Wallet(models.Model):
 					trans.amount = Decimal(transaction['amount']['value'])
 					trans.counterparty = counterparty
 					trans.date_int = transaction['date']
-					trans.memos = ' '.join(transaction['memos'])[:128]
+					trans.memos = re.sub(r',', ' ', ' '.join(transaction['memos'])[:128])
 					trans.result = result
 					trans.direction = direction
 					trans.save()
+				else:
+					num_exists += 1
+			if num_trans > 10 and num_exists == num_trans:
+				has_more = False
 			page += 1
-			print(page)
 
 	def sync_balances(self):
 		pass
@@ -98,7 +111,7 @@ class Currency(models.Model):
 		unique_together = ('name', 'issuer')
 
 	def __str__(self):
-		return '%s/%s' % (self.name, self.issuer)
+		return self.name
 
 
 class Agent(models.Model):
@@ -117,20 +130,20 @@ class Agent(models.Model):
 
 class Transaction(models.Model):
 	hash_sum = models.CharField(max_length=64,unique=True,editable=False,)
-	currency = models.ForeignKey(Currency, on_delete=models.PROTECT,editable=False,default=None,null=True)
-	amount = models.DecimalField(max_digits=20,decimal_places=8,editable=False,default=Decimal(0))
-	counterparty = models.ForeignKey(Wallet, on_delete=models.PROTECT,null=True,default=None,editable=False,)
+	currency = models.ForeignKey(Currency,verbose_name="通证",on_delete=models.PROTECT,editable=False,default=None,null=True)
+	amount = models.DecimalField("数额",max_digits=20,decimal_places=8,editable=False,default=Decimal(0))
+	counterparty = models.ForeignKey(Wallet, verbose_name="对家", on_delete=models.PROTECT,null=True,default=None,editable=False,)
 	date_int = models.IntegerField(default=0,editable=False)
 	date = models.DateField(editable=False,null=True)
-	memos = models.CharField(max_length=128,blank=True,default='',)
+	memos = models.CharField("留言", max_length=128,blank=True,default='',)
 	result = models.ForeignKey(Result,on_delete=models.PROTECT,editable=False,default=None,null=True)
-	direction = models.ForeignKey(Direction, on_delete=models.PROTECT, null=True, editable=False,default=None)
-	deposite = models.BooleanField(verbose_name='代理充值',default=False,)
+	direction = models.ForeignKey(Direction, verbose_name="类型", on_delete=models.PROTECT, null=True, editable=False,default=None)
+	deposite = models.BooleanField(verbose_name='充值',default=False,)
 	lock_deposite = models.BooleanField(default=False,editable=False,)
-	withdraw = models.BooleanField(verbose_name='代理回血',default=False,)
+	withdraw = models.BooleanField(verbose_name='回血',default=False,)
 	lock_withdraw = models.BooleanField(default=False,editable=False,)
-	activation = models.BooleanField(verbose_name='账号激活',default=False,editable=False,)
-	agent = models.ForeignKey(Agent, on_delete=models.PROTECT,editable=False,default=None, null=True)
+	activation = models.BooleanField(verbose_name='激活',default=False,editable=False,)
+	agent = models.ForeignKey(Agent,verbose_name='代理', on_delete=models.PROTECT,editable=False,default=None, null=True)
 
 	class Meta:
 		verbose_name = '交易记录'
@@ -147,14 +160,11 @@ def pre_save_transaction(sender, instance, **kwargs):
 		if not instance.date:
 			instance.date = datetime.datetime.fromtimestamp(instance.date_int).date()
 	if not instance.lock_deposite:
-		if instance.currency:
-			if instance.currency.name == 'CNY':
-				if re.match('.*D[0-9]{15}', instance.memos, re.I):
-					instance.lock_deposite = True
-					instance.deposite = True
+		if instance.currency and instance.currency.name == 'CNY' and re.match('.*D[0-9]{15}', instance.memos, re.I):
+			instance.lock_deposite = True
+			instance.deposite = True
 	if not instance.lock_withdraw:
-		if instance.counterparty:
-			if instance.counterparty.address == 'jaNg3d59VHUiZ2eV4ZSH4Qyh9hUdAjDrzA':
-				if 'c2c' == instance.memos or instance.amount == Decimal(400000) or instance.amount == Decimal(500000):
-					instance.lock_withdraw = True
-					instance.withdraw = True
+		if instance.direction and instance.direction.name == 'received' and instance.currency and instance.currency.name == 'CNY' and instance.counterparty and (instance.counterparty.address == 'jaNg3d59VHUiZ2eV4ZSH4Qyh9hUdAjDrzA' or instance.counterparty.address == 'jU2YgNfRcTghKJXWTTWNMBpPnmXhyihEpn' ):
+			if 'c2c' == instance.memos or (instance.amount == Decimal(400000) or instance.amount == Decimal(500000) or instance.amount == Decimal(50000)):
+				instance.lock_withdraw = True
+				instance.withdraw = True

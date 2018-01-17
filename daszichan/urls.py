@@ -19,11 +19,13 @@ from rest_framework import routers, serializers, viewsets
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework import permissions
 from django.urls import include, path
+from admin.admin_site import my_admin_site
 from rest_framework_simplejwt.views import (
 	TokenObtainPairView,
 	TokenVerifyView,
 	TokenRefreshView,
 )
+from .views import homepage
 # Serializers define the API representation.
 class UserSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
@@ -42,9 +44,11 @@ router.register(r'users', UserViewSet)
 
 urlpatterns = [
 	path('admin/', admin.site.urls),
+	path('agents/', my_admin_site.urls),
 	path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 	path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
 	path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
 	path('api/auth/', include('rest_framework.urls', namespace='rest_framework')),
-	path('api/', include(router.urls))
+	path('api/', include(router.urls)),
+	#path('', homepage, name='home'),
 ]

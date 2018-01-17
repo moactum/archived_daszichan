@@ -1,0 +1,61 @@
+<html>
+<head>
+	<style>
+	/* 利用每个像素 */
+	*,
+	*:before,
+	*:after {
+	    margin: 0;
+	    padding: 0;
+	    border: 0;
+	    box-sizing: border-box;
+	}
+	html, body {
+	    display: flex;
+	    flex-direction: column;
+	    height: 100%;
+	    -webkit-text-size-adjust: 100%; /* 2 */
+	}
+	html {
+	  touch-action: pan-y;
+	}
+	body {
+	    /*background-color: black;  used for debug*/
+	    overflow: hidden;
+	    word-wrap: break-word;
+	    /* font-size: 16px; */
+	    /* font-family: "Helvetica Neue", "Roboto", "Segoe UI", sans-serif; */
+	    text-rendering: optimizeLegibility;
+	    -webkit-font-smoothing: antialiased;
+	    -webkit-backface-visibility: hidden;
+	            backface-visibility: hidden;
+	    -webkit-user-drag: none;
+	    -ms-content-zooming: none;
+	    -webkit-user-select: none;
+	       -moz-user-select: none;
+	        -ms-user-select: none;
+	            user-select: none;
+	    -webkit-touch-callout: none;
+	    -webkit-tap-highlight-color: transparent;
+	}
+	/* 居中布局，设置最大宽度 */
+	@media screen and (min-width: 768px) {
+	    html, body {
+	        width: 540px;
+	        margin: auto;
+	    }
+	}
+	</style>
+</head>
+<body>
+	<div>
+	<form method="POST">
+		{% csrf_token %}
+		<table>
+			{{ form }}
+			<tr><td colspan=2><input type=submit value="提交" /></td></tr>
+		</table>
+	</form>
+	</div>
+</body>
+</html>

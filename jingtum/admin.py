@@ -13,18 +13,25 @@ class AgentAdmin(admin.ModelAdmin):
 
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
-	list_display = ('amount','direction','currency','date','counterparty','memos')
-	list_filter = ('deposite','withdraw','direction','agent','activation')
+	list_display = ('direction','amount','currency','date','counterparty','deposite','withdraw','memos')
+	list_editable = ('deposite','withdraw')
+	list_filter = ('currency','deposite','withdraw','direction','agent',)
 	#list_filter = ('deposite','withdraw','direction','counterparty__agent')
 	#list_filter = ('deposite','withdraw','currency',)
 	date_hierarchy = 'date'
 	actions = ['summarize_amount']
+	list_max_show_all = 20000
 
 	def summarize_amount(self,request,queryset):
 		total = Decimal(0)
 		for obj in queryset:
-			total  += obj.amount
+			if obj.direction.name == 'sent':
+				total -= obj.amount
+			elif obj.direction.name == 'received':
+				total += obj.amount
+			else:
+				pass
 		self.message_user(request,"total amount: %s" % total)
 
-	summarize_amount.short_description = "calculate sum of selected transactions amounts"
+	summarize_amount.short_description = "计算所选 交易纪录金额"
 
