@@ -39,7 +39,7 @@ DATABASES = {
 		'HOST': 'localhost',						  # Set to empty string for localhost. Not used with sq
 		'USER': 'root',								# Not used with sqlite3.
 		#'PASSWORD': 'root',				  # Not used with sqlite3.
-		'PASSWORD': '',				  # Not used with sqlite3.
+		'PASSWORD': 'root',				  # Not used with sqlite3.
 		'PORT': '',
 		'OPTIONS': {'charset': 'utf8mb4'}
 	}

@@ -29,7 +29,7 @@ class AgentAdmin(admin.ModelAdmin):
 	sync_transactions.short_description = "同步所选代理的充值记录"
 
 class TransactionAdmin(admin.ModelAdmin):
-	list_display = ('direction','amount','currency','date','counterparty','deposite','withdraw','memos')
+	list_display = ('date','amount','counterparty','deposite','withdraw','memos')
 	list_editable = ('deposite','withdraw','memos')
 	list_filter = ('deposite','withdraw','direction','agent')
 	#list_filter = ('deposite','withdraw','direction','counterparty__agent')

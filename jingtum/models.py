@@ -33,7 +33,7 @@ class Wallet(models.Model):
 
 	def __str__(self):
 		#return "%s***%s" % (self.address[:5], self.address[-5:])
-		return self.address
+		return self.address.lower()[:10]
 
 	def sync_transactions(self, leger_limit=8000000, page_limit=2000, datetime_limit=datetime.datetime(2017,12,1)):
 		marker = {}
@@ -116,7 +116,7 @@ class Currency(models.Model):
 
 class Agent(models.Model):
 	name = models.CharField(max_length=32,unique=True,)
-	wallet = models.ForeignKey(Wallet, on_delete=models.PROTECT)
+	wallet = models.ForeignKey(Wallet, on_delete=models.SET_NULL, null=True,blank=True,default=None)
 	user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True,blank=True,default=None)
 
 	class Meta:
