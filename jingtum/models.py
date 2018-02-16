@@ -53,9 +53,9 @@ class Wallet(models.Model):
 			num_trans = 0
 			num_exists = 0
 			if 'ledger' in marker.keys():
-				out = json.loads(subprocess.check_output("http 'https://api.jingtum.com/v2/accounts/%s/transactions?results_per_page=%s&marker={ledger:%s,seq:%s}'" % (self.address, results_per_page, marker['ledger'], marker['seq']),shell=True).decode())
+				out = json.loads(subprocess.check_output("http --timeout 120 'https://api.jingtum.com/v2/accounts/%s/transactions?results_per_page=%s&marker={ledger:%s,seq:%s}'" % (self.address, results_per_page, marker['ledger'], marker['seq']),shell=True).decode())
 			else:
-				out = json.loads(subprocess.check_output("http 'https://api.jingtum.com/v2/accounts/%s/transactions?results_per_page=%s'" % (self.address, results_per_page),shell=True).decode())
+				out = json.loads(subprocess.check_output("http --timeout 120 'https://api.jingtum.com/v2/accounts/%s/transactions?results_per_page=%s'" % (self.address, results_per_page),shell=True).decode())
 			if 'marker' in out.keys():
 				marker = out['marker']
 			else:

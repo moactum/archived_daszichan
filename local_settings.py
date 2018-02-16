@@ -4,13 +4,18 @@ from daszichan.settings import INSTALLED_APPS, BASE_DIR, SECRET_KEY
 from rest_framework.settings import api_settings
 #BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-LANGUAGE_CODE = 'zh-cn'
 ALLOWED_HOSTS = ['*',]
 
 INSTALLED_APPS += [
+	'django.contrib.humanize',
+	'mptt',
 	'corsheaders',
 	'rest_framework',
 	'jingtum',
+	'markup_deprecated',
+	'syntax_colorize',
+	'chartit',
+	#'demoproject',
 	#'rest_framework_simplejwt.token_blacklist',
 	#'rest_framework.authtoken',
 ]
@@ -38,7 +43,6 @@ DATABASES = {
 		'NAME': 'test',								  # Or path to database file if using sqlite3.
 		'HOST': 'localhost',						  # Set to empty string for localhost. Not used with sq
 		'USER': 'root',								# Not used with sqlite3.
-		#'PASSWORD': 'root',				  # Not used with sqlite3.
 		'PASSWORD': 'root',				  # Not used with sqlite3.
 		'PORT': '',
 		'OPTIONS': {'charset': 'utf8mb4'}
@@ -48,8 +52,11 @@ DATABASES = {
 #LOGIN_REDIRECT_URL = "/task.jsp/"
 #LOGIN_URL = "/accounts/login/"
 #LOGOUT_URL = "/accounts/logout/"
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+#STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
+STATICFILES_DIRS = (
+	os.path.join(BASE_DIR, 'static'),
+	)
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=3),
