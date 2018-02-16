@@ -6,6 +6,7 @@
 **/out-tsc
 **/platforms
 **/*.pyc
+**/*.swpt
 
 # dependencies
 **/node_modules
@@ -36,7 +37,7 @@ npm-debug.log
 testem.log
 /typings
 yarn.lock
-*.js
+#*.js
 
 # e2e
 /e2e/*.js
@@ -48,4 +49,5 @@ Thumbs.db
 
 # Secrets
 nginx/keys
-static/
+#static/
+db.sqlite3
