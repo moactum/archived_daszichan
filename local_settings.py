@@ -8,9 +8,11 @@ ALLOWED_HOSTS = ['*',]
 
 INSTALLED_APPS += [
 	'django.contrib.humanize',
+	'django.contrib.postgres',
 	'mptt',
 	'corsheaders',
 	'rest_framework',
+	'jsonstore',
 	'jingtum',
 	'markup_deprecated',
 	'syntax_colorize',
@@ -48,12 +50,14 @@ DATABASES = {
 #		'OPTIONS': {'charset': 'utf8mb4'}
 #	}
 	'default': {
+		#'ENGINE': 'django.db.backends.mysql',
 		'ENGINE': 'django.db.backends.postgresql',
 		'NAME': 'xcliu',								  # Or path to database file if using sqlite3.
-		'HOST': 'localhost',						  # Set to empty string for localhost. Not used with sq
+		'HOST': '',						  # Set to empty string for localhost. Not used with sq
 		'USER': 'xcliu',								# Not used with sqlite3.
 		'PASSWORD': '',				  # Not used with sqlite3.
 		'PORT': '5432',
+		#'OPTIONS': {'charset': 'utf8mb4'}
 	}
 }
 
