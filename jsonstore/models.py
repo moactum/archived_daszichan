@@ -7,7 +7,7 @@ from django.contrib.postgres.fields import JSONField
 from mptt.models import MPTTModel, TreeForeignKey
 
 class JsonLedger(MPTTModel):
-	hash_sum = models.CharField(max_length=64,unique=True,editable=False)
+	hash_sum = models.CharField(max_length=64,blank=True,default='',editable=False)
 	data = JSONField()
 	parent = TreeForeignKey('self',null=True, blank=True, on_delete=models.SET_NULL, related_name='children', db_index=True)
 
@@ -15,7 +15,7 @@ class JsonLedger(MPTTModel):
 		return self.hash_sum
 
 class JsonTransaction(MPTTModel):
-	hash_sum = models.CharField(max_length=64,unique=True,editable=False)
+	hash_sum = models.CharField(max_length=64,blank=True,default='',editable=False)
 	data = JSONField()
 	parent = TreeForeignKey('self',null=True, blank=True, on_delete=models.SET_NULL, related_name='children', db_index=True)
 
