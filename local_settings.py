@@ -37,19 +37,19 @@ MIDDLEWARE = [
 
 DATABASES = {
 #	'default': {
-#	'ENGINE': 'django.db.backends.sqlite3',
-#	'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#		'ENGINE': 'django.db.backends.sqlite3',
+#		'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 #	},
-#	'default': {
-#		'ENGINE': 'django.db.backends.mysql',
-#		'NAME': 'test',								  # Or path to database file if using sqlite3.
-#		'HOST': 'localhost',						  # Set to empty string for localhost. Not used with sq
-#		'USER': 'root',								# Not used with sqlite3.
-#		'PASSWORD': 'root',				  # Not used with sqlite3.
-#		'PORT': '',
-#		'OPTIONS': {'charset': 'utf8mb4'}
-#	}
 	'default': {
+		'ENGINE': 'django.db.backends.mysql',
+		'NAME': 'test',								  # Or path to database file if using sqlite3.
+		'HOST': 'localhost',						  # Set to empty string for localhost. Not used with sq
+		'USER': 'root',								# Not used with sqlite3.
+		'PASSWORD': 'root',				  # Not used with sqlite3.
+		'PORT': '',
+		'OPTIONS': {'charset': 'utf8mb4'}
+	},
+	'dbpostgresql': {
 		#'ENGINE': 'django.db.backends.mysql',
 		'ENGINE': 'django.db.backends.postgresql',
 		'NAME': 'xcliu',								  # Or path to database file if using sqlite3.
@@ -71,25 +71,25 @@ STATICFILES_DIRS = (
 	)
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=3),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
-    'ROTATE_REFRESH_TOKENS': False,
-    'BLACKLIST_AFTER_ROTATION': True,
+	'ACCESS_TOKEN_LIFETIME': timedelta(days=3),
+	'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+	'ROTATE_REFRESH_TOKENS': False,
+	'BLACKLIST_AFTER_ROTATION': True,
 
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': SECRET_KEY,
-    'VERIFYING_KEY': None,
+	'ALGORITHM': 'HS256',
+	'SIGNING_KEY': SECRET_KEY,
+	'VERIFYING_KEY': None,
 
-    'AUTH_HEADER_TYPES': ('Bearer','JWT'),
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
+	'AUTH_HEADER_TYPES': ('Bearer','JWT'),
+	'USER_ID_FIELD': 'id',
+	'USER_ID_CLAIM': 'user_id',
 
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
-    'TOKEN_TYPE_CLAIM': 'token_type',
+	'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+	'TOKEN_TYPE_CLAIM': 'token_type',
 
-    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
-    'SLIDING_TOKEN_LIFETIME': timedelta(days=3),
-    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=30),
+	'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
+	'SLIDING_TOKEN_LIFETIME': timedelta(days=3),
+	'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=30),
 }
 
 REST_FRAMEWORK = {
@@ -125,3 +125,4 @@ USE_TZ =  True
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
 DATA_UPLOAD_MAX_MEMORY_SIZE = 26214400
 LOGIN_URL='/api/auth/login/'
+DATABASE_ROUTERS = ['dbrouter.dbrouters.DbPostgresqlRouter',]
