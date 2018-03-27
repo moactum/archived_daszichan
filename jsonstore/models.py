@@ -40,7 +40,8 @@ class JsonLedger(models.Model):
 					out = sys.stdout.write("..!..http returned status %s\n" % response.status)
 					time.sleep(10 * random.randint(1,10))
 			except Exception as e:
-				out = sys.stderr.write(e)
+				out = sys.stderr.write("exception happend\n")
+				print(e)
 				time.sleep(60 * random.randint(1,10))
 		return ledger
 
