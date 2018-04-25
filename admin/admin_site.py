@@ -48,15 +48,16 @@ class AgentAdmin(admin.ModelAdmin):
 	export_deposite.short_description = "导出充值记录"
 
 class TransactionAdmin(admin.ModelAdmin):
-	list_display = ('date','amount','counterparty','deposite','withdraw','memos')
-	list_editable = ('deposite','withdraw','memos')
-	list_filter = ('deposite','withdraw','direction','agent')
-	#list_filter = ('deposite','withdraw','direction','counterparty__agent')
-	#list_filter = ('deposite','withdraw','currency',)
-	date_hierarchy = 'date'
-	actions = ['summarize_amount','export_deposite']
-	list_max_show_all = 20000
-	save_on_top = True
+	list_display = ('hash_sum',)
+	#list_display = ('date','amount','counterparty','deposite','withdraw','memos')
+	#list_editable = ('deposite','withdraw','memos')
+	#list_filter = ('deposite','withdraw','direction','agent')
+	##list_filter = ('deposite','withdraw','direction','counterparty__agent')
+	##list_filter = ('deposite','withdraw','currency',)
+	#date_hierarchy = 'date'
+	#actions = ['summarize_amount','export_deposite']
+	#list_max_show_all = 20000
+	#save_on_top = True
 
 	def has_change_permission(self,request,obj=None):
 		return request.user.is_active and ( not obj or obj and (obj.agent == request.user.agent or request.user.is_superuser))

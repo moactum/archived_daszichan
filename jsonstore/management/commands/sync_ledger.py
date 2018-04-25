@@ -66,19 +66,22 @@ class Command(BaseCommand):
 				except Exception as e:
 					self.stderr.write("...!... got exception using websocket")
 					e
-					time.sleep(10)
+					time.sleep(20)
 				time.sleep(10 * random.randint(1,10))
 		elif options['missing']:
 			self.stdout.write("...sychronize missing ledgers")
 			ledger = JsonLedger.objects.order_by('-id').first()
-			while ledger.id > 9223000:
-				try:
-					ledger = JsonLedger.objects.get(id=ledger.id - 1)
-				except Exception as e:
-					self.stdout.write("...syncing missing ledger at %s" % (ledger.id - 1), ending='')
-					ledger = JsonLedger.sync(ledger.parent_hash)
-					self.stdout.write("...synced %s" % ledger.hash_sum)
-			self.stdout.write("...sychronized missing ledgers")
+			while True:
+				while ledger.id > 9292000:
+					try:
+						ledger = JsonLedger.objects.get(id=ledger.id - 1)
+					except Exception as e:
+						self.stdout.write("...syncing missing ledger at %s" % (ledger.id - 1), ending='')
+						ledger = JsonLedger.sync(ledger.parent_hash)
+						self.stdout.write("...synced %s" % ledger.hash_sum)
+				self.stdout.write("...sychronized missing ledgers")
+				self.stdout.write("... next round of syncing soon...")
+				time.sleep(60 * random.randint(15,30))
 		else:
 			self.stdout.write("...no arguments, try to continuing syching ledger")
 			ledger_starting = JsonLedger.objects.all().order_by('id').first()
