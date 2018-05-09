@@ -3,6 +3,8 @@ from jsonstore.models import *
 import sys, subprocess
 import json, pprint, datetime
 import time, random
+from urllib import request
+from multiprocessing import Pool
 
 from socketIO_client import SocketIO, BaseNamespace
 
@@ -17,7 +19,7 @@ class Namespace(BaseNamespace):
 				msg = json.loads(msg[1:])
 				if msg[0] == "ledger_closed":
 					sys.stdout.write("...... syncing %s ... " % msg[1][0]['ledger_hash'])
-					ledger = JsonLedger.sync(msg[1][0]['ledger_hash'])
+					ledger = JsonJingtumLedger.sync(msg[1][0]['ledger_hash'])
 					sys.stdout.write("synced ledger %s\n" % ledger.id)
 		except Exception as e:
 			sys.stdout.write("...!... got exception ...")
@@ -28,33 +30,34 @@ class Command(BaseCommand):
 	help = 'Sychronize json ledgers/transactions with provided ledger height and hash'
 
 	def add_arguments(self,parser):
-		parser.add_argument('--hash_sum', action="store", dest="hash_sum", help="specify the ledger hash, get from state.jingtum.com")
-		parser.add_argument('--websocket', action="store_true", dest="websocket", help="sync leger with websocket")
-		parser.add_argument('--missing', action="store_true", dest="missing", help="sync missing leger")
+		parser.add_argument('--hash', action="store", dest="hash", help="specify the ledger hash, get from state.jingtum.com")
+		parser.add_argument('--websocket', action="store_true", dest="websocket", help="sync ledger with websocket")
+		parser.add_argument('--missing', action="store_true", dest="missing", help="sync missing ledger")
 		parser.add_argument('--onceonly', action="store_true", dest="onceonly", help="syncing onestop")
+		parser.add_argument('--moac', action="store_true", dest="moac", help="syncing moac ledger")
 
 	def handle(self, *args, **options):
-		if options['hash_sum']:
-			hash_sum = options['hash_sum']
-			self.stdout.write("...got arguments to synchronize ledger from %s" % hash_sum)
+		if options['hash']:
+			hash = options['hash']
+			self.stdout.write("...got arguments to synchronize ledger from %s" % hash)
 			if not options['onceonly']:
 				try:
 					self.stdout.write("......bypassing", ending='')
 					while hash_sum:
-						ledger = JsonLedger.objects.get(hash_sum=hash_sum)
+						ledger = JsonJingtumLedger.objects.get(hash=hash)
 						hash_sum = ledger.parent_hash
 						self.stdout.write(" %s," % ledger.id, ending='')
-				except JsonLedger.DoesNotExist:
+				except JsonJingtumLedger.DoesNotExist:
 					pass
 				self.stdout.write("")
-			ledger = JsonLedger.sync(hash_sum)
+			ledger = JsonJingtumLedger.sync(hash)
 			self.stdout.write("......synced ledger %s" % ledger.id)
 			while not options['onceonly'] and ledger and ledger.parent_hash and ledger.id % 1000000:
 				self.stdout.write("...... syncing %s ... " % ledger.parent_hash, ending='')
-				if JsonLedger.objects.filter(hash_sum=ledger.parent_hash):
+				if JsonJingtumLedger.objects.filter(hash_sum=ledger.parent_hash):
 					self.stderr.write("...!... got earlier synced ledger, quiting")
 					break
-				ledger = JsonLedger.sync(ledger.parent_hash)
+				ledger = JsonJingtumLedger.sync(ledger.parent_hash)
 				self.stdout.write("synced ledger %s" % ledger.id)
 		elif options['websocket']:
 			self.stdout.write("...sychronize using websocket")
@@ -68,37 +71,55 @@ class Command(BaseCommand):
 					e
 					time.sleep(20)
 				time.sleep(10 * random.randint(1,10))
+		elif options['moac']:
+			self.stdout.write("...sychronize moac ledger")
+			starting = 1
+			latest_ledger = JsonMoacLedger.objects.all().order_by('id').last()
+			if latest_ledger:
+				starting = latest_ledger.id + 1
+			self.stdout.write("starting from %g" % starting)
+			while True:
+		#		with Pool(5) as pool:
+		#			pool.map(JsonMoacLedger.sync,range(starting, 20000))
+				try:
+					ledger = JsonMoacLedger.sync(starting)
+					starting += 1
+					self.stdout.write("syncing %s" % starting)
+				except Exception as e:
+					print(e)
+					time.sleep(10)
+
 		elif options['missing']:
 			self.stdout.write("...sychronize missing ledgers")
-			ledger = JsonLedger.objects.order_by('-id').first()
+			ledger = JsonJingtumLedger.objects.order_by('-id').first()
 			while True:
 				while ledger.id > 9292000:
 					try:
-						ledger = JsonLedger.objects.get(id=ledger.id - 1)
+						ledger = JsonJingtumLedger.objects.get(id=ledger.id - 1)
 					except Exception as e:
 						self.stdout.write("...syncing missing ledger at %s" % (ledger.id - 1), ending='')
-						ledger = JsonLedger.sync(ledger.parent_hash)
+						ledger = JsonJingtumLedger.sync(ledger.parent_hash)
 						self.stdout.write("...synced %s" % ledger.hash_sum)
 				self.stdout.write("...sychronized missing ledgers")
 				self.stdout.write("... next round of syncing soon...")
 				time.sleep(60 * random.randint(15,30))
 		else:
 			self.stdout.write("...no arguments, try to continuing syching ledger")
-			ledger_starting = JsonLedger.objects.all().order_by('id').first()
+			ledger_starting = JsonJingtumLedger.objects.all().order_by('id').first()
 			if not ledger_starting:
 				self.stdout.write("......please provide initial conditions to sync ledger")
 			elif ledger_starting.id == 1:
 				self.stdout.write("......already synced ledger")
 			elif ledger_starting.parent_hash:
 				self.stdout.write("......starting sync with leger %s" % ledger_starting.parent_hash)
-				ledger = JsonLedger.sync(ledger_starting.parent_hash)
+				ledger = JsonJingtumLedger.sync(ledger_starting.parent_hash)
 				self.stdout.write("...... syncing ledger at %s" % ledger.id)
 				while ledger and ledger.parent_hash:
 					self.stdout.write("...... syncing %s ... " % ledger.parent_hash, ending='')
-					if JsonLedger.objects.filter(hash_sum=ledger.parent_hash):
+					if JsonJingtumLedger.objects.filter(hash_sum=ledger.parent_hash):
 						self.stderr.write("...!... got earlier synced ledger, quiting")
 						break
-					ledger = JsonLedger.sync(ledger.parent_hash)
+					ledger = JsonJingtumLedger.sync(ledger.parent_hash)
 					self.stdout.write("synced ledger %s" % ledger.id)
 			else:
 					self.stdout.print("finished")
