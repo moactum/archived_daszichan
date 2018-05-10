@@ -44,6 +44,7 @@ router.register(r'users', UserViewSet)
 
 urlpatterns = [
 	re_path('^$', homepage, name='home'),
+	path('admin/doc/', include('django.contrib.admindocs.urls')),
 	path('admin/', admin.site.urls),
 	path('agents/', my_admin_site.urls),
 	path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

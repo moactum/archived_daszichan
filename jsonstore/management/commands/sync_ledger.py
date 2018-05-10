@@ -84,7 +84,7 @@ class Command(BaseCommand):
 				try:
 					ledger = JsonMoacLedger.sync(starting)
 					starting += 1
-					self.stdout.write("syncing %s" % starting)
+					self.stdout.write("\tsyncing %s" % starting)
 				except Exception as e:
 					print(e)
 					time.sleep(10)

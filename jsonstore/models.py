@@ -75,7 +75,7 @@ class JsonMoacLedger(models.Model):
 			pass
 		while not done:
 			try:
-				response = request.urlopen(url,timeout=4)
+				response = request.urlopen(url,timeout=30)
 				if response.status == 200:
 					result = json.loads(response.read().decode())
 					hash = result['hash']
@@ -90,7 +90,7 @@ class JsonMoacLedger(models.Model):
 				out = sys.stderr.write("exception happend\n")
 				print(e)
 				time.sleep(random.randint(1,10))
-		sys.stdout.write("synced %s" % height)
+		sys.stdout.write("\tsynced %s" % height)
 		return ledger
 
 class JsonMoacTransaction(MPTTModel):

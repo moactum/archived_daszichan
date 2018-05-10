@@ -8,10 +8,12 @@ ALLOWED_HOSTS = ['*',]
 
 INSTALLED_APPS += [
 	'django.contrib.humanize',
+	'django.contrib.admindocs',
 	'django.contrib.postgres',
 	'mptt',
 	'corsheaders',
 	'rest_framework',
+	'whitenoise',
 	'jsonstore',
 	'jingtum',
 	#'markup_deprecated',
@@ -25,7 +27,7 @@ INSTALLED_APPS += [
 MIDDLEWARE = [
 	'django.middleware.security.SecurityMiddleware',
 	'corsheaders.middleware.CorsMiddleware',
-	#'whitenoise.middleware.WhiteNoiseMiddleware',
+	'whitenoise.middleware.WhiteNoiseMiddleware',
 	'django.contrib.sessions.middleware.SessionMiddleware',
 	'django.middleware.locale.LocaleMiddleware',
 	'django.middleware.common.CommonMiddleware',
@@ -40,16 +42,17 @@ DATABASES = {
 #		'ENGINE': 'django.db.backends.sqlite3',
 #		'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 #	},
+#	'default': {
+#		'ENGINE': 'django.db.backends.mysql',
+#		'NAME': 'test',								  # Or path to database file if using sqlite3.
+#		'HOST': 'localhost',						  # Set to empty string for localhost. Not used with sq
+#		'USER': 'root',								# Not used with sqlite3.
+#		'PASSWORD': '',				  # Not used with sqlite3.
+#		'PORT': '',
+#		'OPTIONS': {'charset': 'utf8mb4'}
+#	},
+	#'dbpostgresql': {
 	'default': {
-		'ENGINE': 'django.db.backends.mysql',
-		'NAME': 'test',								  # Or path to database file if using sqlite3.
-		'HOST': 'localhost',						  # Set to empty string for localhost. Not used with sq
-		'USER': 'root',								# Not used with sqlite3.
-		'PASSWORD': '',				  # Not used with sqlite3.
-		'PORT': '',
-		'OPTIONS': {'charset': 'utf8mb4'}
-	},
-	'dbpostgresql': {
 		#'ENGINE': 'django.db.backends.mysql',
 		'ENGINE': 'django.db.backends.postgresql',
 		'NAME': 'xcliu',								  # Or path to database file if using sqlite3.
@@ -64,11 +67,11 @@ DATABASES = {
 #LOGIN_REDIRECT_URL = "/task.jsp/"
 #LOGIN_URL = "/accounts/login/"
 #LOGOUT_URL = "/accounts/logout/"
-#STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
-STATICFILES_DIRS = (
-	os.path.join(BASE_DIR, 'static'),
-	)
+#STATICFILES_DIRS = (
+#	os.path.join(BASE_DIR, 'static'),
+#	)
 
 SIMPLE_JWT = {
 	'ACCESS_TOKEN_LIFETIME': timedelta(days=3),
@@ -106,7 +109,7 @@ REST_FRAMEWORK = {
 	#'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
 	#'PAGE_SIZE': 100
 }
-#STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 TIMEZONE = 'America/Toronto'
 USE_TZ =  True
 #CORS_ORIGIN_ALLOW_ALL = True
@@ -125,4 +128,4 @@ USE_TZ =  True
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
 DATA_UPLOAD_MAX_MEMORY_SIZE = 26214400
 LOGIN_URL='/api/auth/login/'
-DATABASE_ROUTERS = ['dbrouter.dbrouters.DbPostgresqlRouter',]
+#DATABASE_ROUTERS = ['dbrouter.dbrouters.DbPostgresqlRouter',]
