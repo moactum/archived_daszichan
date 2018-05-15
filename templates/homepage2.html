@@ -13,7 +13,13 @@
 	<div style="height:2em;">
 	</div>
 	<div style="margin:2em;">
-		<h1> {{ request.user.username }} </h1>
+	<form method="POST">
+		{% csrf_token %}
+		<table>
+			{{ form }}
+			<tr><td colspan=2 style="font-size:200%"><input type=submit value="提交" /></td></tr>
+		</table>
+	</form>
 	</div>
 </body>
 </html>

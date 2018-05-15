@@ -7,6 +7,7 @@ from django.contrib.postgres.fields import JSONField
 from mptt.models import MPTTModel, TreeForeignKey
 from urllib import request
 import sys, random, time, json
+from moac.models import * 
 
 class JsonJingtumLedger(models.Model):
 	hash = models.CharField(max_length=64,unique=True,editable=False)
@@ -17,6 +18,7 @@ class JsonJingtumLedger(models.Model):
 
 	def __str__(self):
 		return "%s: %s" % (self.id, self.hash)
+
 	@classmethod
 	def sync(cls,hash):
 		url = "http://state.jingtum.com/query/ledger/%s" % hash
@@ -61,16 +63,68 @@ class JsonMoacLedger(models.Model):
 	synced = models.BooleanField(default=False, editable=False)
 	#parent = TreeForeignKey('self',null=True, blank=True, on_delete=models.SET_NULL, related_name='children', db_index=True)
 
+	class Meta:
+		ordering = ('id',)
 	def __str__(self):
 		return "%s: %s" % (self.id, self.hash)
+
+	def proc_ledger(self):
+		try:
+			ledger = Ledger.objects.get(hash=self.hash)
+		except Ledger.DoesNotExist:
+			miner,created = Address.objects.get_or_create(address=self.data['miner'])
+			if created:
+				miner.update_display()
+			ledger = Ledger(hash=self.hash, number=self.id, difficulty = self.data['difficulty'], nonce = self.data['nonce'], miner=miner, timestamp=self.data['timestamp'])
+			ledger.save()
+			if self.data['transactions']:
+				for txr in self.data['transactions']:
+					sys.stdout.write("%s, " % txr['transactionIndex'])
+					tx_from, created = Address.objects.get_or_create(address=txr['from'])
+					if created:
+						tx_from.update_display()
+					if txr['to']:
+						tx_to, created = Address.objects.get_or_create(address=txr['to'])
+						if created:
+							tx_to.update_display()
+					else:
+						tx_to = None
+					transaction, created = Transaction.objects.get_or_create(ledger=ledger,hash=txr['hash'],tx_from=tx_from, tx_to=tx_to, value=int(float(txr['value'])) / 1000000000)
+					transaction.save()
+				sys.stdout.write('\n')
+			
+	@classmethod
+	def verify(cls,start=0):
+		last = cls.objects.get(id=start)
+		for jml in cls.objects.filter(id__gt=start):
+			if jml.parent_hash != last.hash:
+				print(jml)
+				print(last)
+				if last.id != jml.id - 1:
+					print("\t...trying to sync missing ledgers")
+					id_to_sync = last.id + 1
+					while id_to_sync < jml.id:
+						cls.sync(id_to_sync)
+						id_to_sync += 1
+				else:
+					print("\tparent:%s" % jml.parent_hash)
+					print("\tparent:%s" % last.hash)
+			last = jml
+		return True
 
 	@classmethod
 	def sync(cls,height):
 		url = "http://daszichan.com:3003/api/block/%s" % height
 		done = False
 		try:
+			last = cls.objects.get(id=height-1)
 			ledger = cls.objects.get(id=height)
 			done = True
+			if ledger.parent_hash != last.hash:
+				sys.stdout.write("\tinconsistancy found, delete last two")
+				last.delete()
+				ledger.delete()
+				ledger = cls.objects.get(id=height-2)
 		except cls.DoesNotExist:
 			pass
 		while not done:
@@ -80,12 +134,17 @@ class JsonMoacLedger(models.Model):
 					result = json.loads(response.read().decode())
 					hash = result['hash']
 					parent_hash = result['parentHash']
-					ledger = cls(id=height,hash=hash,parent_hash=parent_hash,data=result)
-					ledger.save()
+					if parent_hash == last.hash:
+						ledger = cls(id=height,hash=hash,parent_hash=parent_hash,data=result)
+						ledger.save()
+					else:
+						sys.stdout.write("\tinconsistancy found, delete last two")
+						last.delete()
+						ledger = cls.objects.get(id=height-2)
 					done = True
 				else:
 					out = sys.stdout.write("..!..http returned status %s\n" % response.status)
-					time.sleep(random.randint(1,10))
+					time.sleep(random.randint(5,10))
 			except Exception as e:
 				out = sys.stderr.write("exception happend\n")
 				print(e)
@@ -103,9 +162,17 @@ class JsonMoacTransaction(MPTTModel):
 		return self.hash
 
 @receiver(pre_save, sender=JsonJingtumLedger)
-def pre_save_transaction(sender, instance, **kwargs):
+def pre_save_ledger_jingtum(sender, instance, **kwargs):
 	pass
 
-@receiver(pre_save, sender=JsonJingtumTransaction)
-def pre_save_transaction(sender, instance, **kwargs):
+@receiver(pre_save, sender=JsonMoacLedger)
+def pre_save_ledger_moac(sender, instance, **kwargs):
 	pass
+
+@receiver(post_save, sender=JsonJingtumLedger)
+def pre_save_transaction_jingtum(sender, instance, created, **kwargs):
+	pass
+@receiver(post_save, sender=JsonMoacLedger)
+def pre_save_transaction_moac(sender, instance, created, **kwargs):
+	if created:
+		instance.proc_ledger()

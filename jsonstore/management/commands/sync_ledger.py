@@ -73,7 +73,7 @@ class Command(BaseCommand):
 				time.sleep(10 * random.randint(1,10))
 		elif options['moac']:
 			self.stdout.write("...sychronize moac ledger")
-			starting = 1
+			starting = 0
 			latest_ledger = JsonMoacLedger.objects.all().order_by('id').last()
 			if latest_ledger:
 				starting = latest_ledger.id + 1
@@ -83,7 +83,7 @@ class Command(BaseCommand):
 		#			pool.map(JsonMoacLedger.sync,range(starting, 20000))
 				try:
 					ledger = JsonMoacLedger.sync(starting)
-					starting += 1
+					starting = ledger.id + 1
 					self.stdout.write("\tsyncing %s" % starting)
 				except Exception as e:
 					print(e)

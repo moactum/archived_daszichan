@@ -16,6 +16,7 @@ INSTALLED_APPS += [
 	'whitenoise',
 	'jsonstore',
 	'jingtum',
+	'moac',
 	#'markup_deprecated',
 	'syntax_colorize',
 	'chartit',

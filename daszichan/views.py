@@ -8,7 +8,7 @@ class AgentForm(forms.Form):
 	wallet   = forms.CharField(label="钱包地址", max_length=60)
 
 @login_required
-def homepage(request):
+def homepage2(request):
 	if not request.user.agent:
 		agent,created = Agent.objects.get_or_create(name=request.user.username,user=request.user)
 	else:
@@ -32,3 +32,7 @@ def homepage(request):
 		if agent.wallet:
 			return HttpResponseRedirect('/agents/')
 		return render(request, "homepage.html", { 'form': form } )
+
+@login_required
+def homepage(request):
+	return render(request, "homepage.html", { } )

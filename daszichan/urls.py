@@ -20,6 +20,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework import permissions
 from django.urls import include, path, re_path
 from admin.admin_site import my_admin_site
+from admin.admin_site_public import my_admin_site_public
 from rest_framework_simplejwt.views import (
 	TokenObtainPairView,
 	TokenVerifyView,
@@ -47,6 +48,7 @@ urlpatterns = [
 	path('admin/doc/', include('django.contrib.admindocs.urls')),
 	path('admin/', admin.site.urls),
 	path('agents/', my_admin_site.urls),
+	path('public/', my_admin_site_public.urls),
 	path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 	path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
 	path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
