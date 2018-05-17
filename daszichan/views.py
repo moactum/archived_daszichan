@@ -1,38 +1,98 @@
-from django.shortcuts import render
-from django import forms
-from django.http import HttpResponseRedirect
-from django.contrib.auth.decorators import login_required
-from jingtum.models import Agent, Wallet
+import os
+from chartit import DataPool, Chart
+from moac.models import *
+from django.shortcuts import render_to_response
+from django.db.models import F, Sum, Avg, Count
 
-class AgentForm(forms.Form):
-	wallet   = forms.CharField(label="钱包地址", max_length=60)
 
-@login_required
-def homepage2(request):
-	if not request.user.agent:
-		agent,created = Agent.objects.get_or_create(name=request.user.username,user=request.user)
-	else:
-		agent = request.user.agent
-	if request.method == 'POST':
-		form = AgentForm(request.POST)
-		if form.is_valid():
-			try:
-				address = form.cleaned_data['wallet']
-				if not agent.wallet or agent.wallet.address != address:
-					agent.wallet = Wallet.objects.get(address=address)
-					agent.save()
-				print("handle post")
-				return HttpResponseRedirect('/agents/')
-			except Exception as e:
-				print(e)
-				pass
-		return HttpResponseRedirect('/')
-	else:
-		form = AgentForm()
-		if agent.wallet:
-			return HttpResponseRedirect('/agents/')
-		return render(request, "homepage.html", { 'form': form } )
+def homepage(_):
+	#NUM_LATEST = 5
+	ds_ledger = DataPool(
+		series=[
+		{
+			'options': { 
+				'source': StatLedger.objects.order_by('date')
+				#'source': OrgCount.objects.filter(date__gte=timezone.datetime(2017,11,1),org__name='ibmcom')
+			},
+			'terms': [
+				{'date': 'date'},
+				{'Daily Max of Txs': 'ledger_txs__num_txs'}
+			]
+		},
+		{
+			'options': {
+				'source': StatLedger.objects.order_by('date')
+			},
+			'terms': [
+				{'date': 'date'},
+				{'Daily Max of Tps': 'ledger_tps__tps'}
+			]
+		},
+		]
+	)
 
-@login_required
-def homepage(request):
-	return render(request, "homepage.html", { } )
+
+	cht_ledger = Chart(
+		datasource=ds_ledger,
+		series_options=[
+		{
+			'options': {
+				'type': 'line',
+				'stacking': False,
+				'yAxis': 0,
+			},
+			'terms': {
+				'date': [
+					'Daily Max of Txs',
+					],
+			}
+		},
+		{
+			'options': {
+				'type': 'line',
+				'stacking': False,
+				'yAxis': 1,
+			},
+			'terms': {
+				'date': [
+					'Daily Max of Tps',
+					],
+			}
+		},
+		],
+
+		chart_options={
+			'title': {
+				'text': 'daily block statistic: TXS (left y) and TPS(right y)'
+			},
+			'xAxis':
+				{
+				'type': 'date',
+				'tickInterval': 1,
+				'title': {
+					'text': ' '
+					}
+				},
+			'yAxis': [
+				{
+				'title': {
+					'text': 'Number Of Transactions',
+				},
+				'min': 0
+				},
+				{
+				'title': {
+					'text': 'Transactions Per Second',
+				},
+				'min': 0,
+				'opposite': True
+				},
+			],
+			'chart': {
+				'zoomType': 'x',
+			},
+			},
+		)
+
+	return render_to_response('index.html', {'chart_list': [ cht_ledger ], 'Addresses': Address.objects, 'Ledgers': Ledger.objects, 'Transactions': Transaction.objects, 'difficulty_in_tera': int(Ledger.objects.last().difficulty // 1e12)})
+
