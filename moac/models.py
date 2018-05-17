@@ -26,6 +26,8 @@ class Address(models.Model):
 class Ledger(models.Model):
 	hash = models.CharField(max_length=66,primary_key=True)
 	number = models.IntegerField(default=0)
+	num_txs = models.IntegerField(default=0)
+	tps = models.IntegerField(default=0)
 	difficulty = models.BigIntegerField(default=0)
 	nonce = models.CharField(max_length=20,default='')
 	timestamp = models.IntegerField(default=0)

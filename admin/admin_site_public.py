@@ -18,7 +18,7 @@ class JsonMoacLedgerAdmin(admin.ModelAdmin):
 
 	
 class LedgerAdmin(admin.ModelAdmin):
-	list_display = ('number','timestamp','miner','hash')
+	list_display = ('number','num_txs','tps','timestamp','miner','hash')
 
 	def has_change_permission(self,request,obj=None):
 		if obj:

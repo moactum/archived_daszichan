@@ -68,6 +68,11 @@ class JsonMoacLedger(models.Model):
 	def __str__(self):
 		return "%s: %s" % (self.id, self.hash)
 
+	def delete(self):
+		for l in Ledger.objects.filter(number=self.id):
+			l.delete()
+		super(JsonMoacLedger,self).delete()
+
 	def proc_ledger(self):
 		try:
 			ledger = Ledger.objects.get(hash=self.hash)
@@ -75,7 +80,9 @@ class JsonMoacLedger(models.Model):
 			miner,created = Address.objects.get_or_create(address=self.data['miner'])
 			if created:
 				miner.update_display()
-			ledger = Ledger(hash=self.hash, number=self.id, difficulty = self.data['difficulty'], nonce = self.data['nonce'], miner=miner, timestamp=self.data['timestamp'])
+			num_txs = len(self.data['transactions'])
+			tps = int(num_txs / (self.data['timestamp'] - JsonMoacLedger.objects.get(id=self.id - 1).data['timestamp']))
+			ledger = Ledger(hash=self.hash, number=self.id, num_txs=num_txs, tps=tps, difficulty = self.data['difficulty'], nonce = self.data['nonce'], miner=miner, timestamp=self.data['timestamp'])
 			ledger.save()
 			if self.data['transactions']:
 				for txr in self.data['transactions']:
@@ -113,8 +120,9 @@ class JsonMoacLedger(models.Model):
 		return True
 
 	@classmethod
-	def sync(cls,height):
-		url = "http://daszichan.com:3003/api/block/%s" % height
+	def sync(cls,height,url=''):
+		if not url:
+			url = "http://localhost:3003/api/block/%s" % height
 		done = False
 		try:
 			last = cls.objects.get(id=height-1)
@@ -148,7 +156,7 @@ class JsonMoacLedger(models.Model):
 			except Exception as e:
 				out = sys.stderr.write("exception happend\n")
 				print(e)
-				time.sleep(random.randint(1,10))
+				time.sleep(random.randint(5,10))
 		sys.stdout.write("\tsynced %s" % height)
 		return ledger
 
