@@ -63,7 +63,7 @@ def homepage(_):
 
 		chart_options={
 			'title': {
-				'text': 'daily block statistic: TXS (left y) and TPS(right y)'
+				'text': 'daily block statistic: max TXS (left y) and max TPS(right y)'
 			},
 			'xAxis':
 				{

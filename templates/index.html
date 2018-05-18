@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>ICP Community Edition Metrics</title>
+        <title>MOACscan Metrics</title>
         {% load humanize %}
         {% load static %}
         <link rel="stylesheet" href="{% get_static_prefix %}home/css/960.css" type="text/css" />
@@ -21,8 +21,9 @@
         <!-- START TOP SECTION -->
         <div class="container_12">
             <!-- START LOGO -->
-            <div class="grid_4 header" id="logo">
-                <img src="{% get_static_prefix %}home/images/logo.png" />
+            <div class="grid_4 header" style="margin-top:2em;" id="logo">
+                <!--<img src="{% get_static_prefix %}home/images/logo.png" />-->
+				<h1>&nbsp;MOACscan</h1>
             </div>
             <!-- END LOGO -->
             <!-- START NAVIGATION -->
@@ -30,7 +31,7 @@
                 <div id="navigation">
                     <ul id="nav">
                         <li id="demo">
-                            <a href="/live"><b> LIVE </b></a>
+                            <a href="/live"><b> LIVE&nbsp; </b></a>
                         </li>
                     </ul>
                 </div>
@@ -42,28 +43,36 @@
 		<hr>
         <div class="container_12">
             <!-- AddThis Button BEGIN -->
-            <div class="center90percent">
-		<h2 class="center">MOAC ledger stats</h2>
-		<table style="font-size:125%">
-			<tbody>
-				<tr class="odd">
-					<td>Last Difficulty</td>
-					<td style="text-align:right;">{{ difficulty_in_tera }}T</td>
-				</tr>
-				<tr class="even">
-					<td>Ledger Height</td>
-					<td style="text-align:right;">{{ Ledgers.count|intcomma }}</td>
-				</tr>
-				<tr class="odd">
-					<td>Total Transactions</td>
-					<td style="text-align:right;">{{ Transactions.count|intcomma }}</td>
-				</tr>
-				<tr class="even">
-					<td>Total Addresses</td>
-					<td style="text-align:right;">{{ Addresses.count|intcomma }}</td>
-				</tr>
-			</tbody>
-		</table>
+            <div class="grid-11" style="margin:10px">
+				<h2 class="center">MOAC Ledger Stats</h2>
+				<table style="font-size:125%">
+					<tbody>
+						<tr class="odd">
+							<td>Last Difficulty</td>
+							<td style="text-align:right;">{{ difficulty_in_tera }}T</td>
+						</tr>
+						<tr class="even">
+							<td>Ledger Height</td>
+							<td style="text-align:right;">{{ Ledgers.count|intcomma }}</td>
+						</tr>
+						<tr class="odd">
+							<td>Total Transactions</td>
+							<td style="text-align:right;">{{ Transactions.count|intcomma }}</td>
+						</tr>
+						<tr class="even">
+							<td>Total Addresses</td>
+							<td style="text-align:right;">{{ Addresses.count|intcomma }}</td>
+						</tr>
+						<tr class="odd">
+							<td>Uncle Ratio</td>
+							<td style="text-align:right;">??%</td>
+						</tr>
+						<tr class="even">
+							<td><h3> <a href="https://moacscan.daszichan.com/public/moac/ledger/?o=-1.0" target="_new">ledgers order by txs </a></h3></td>
+							<td style="text-align:right;"><h3> <a href="https://moacscan.daszichan.com/public/moac/ledger/?o=-2.0" target="_new">ledgers order by tps</a></h3></td>
+						</tr>
+					</tbody>
+				</table>
             </div>
             <!-- AddThis Button END -->
 
@@ -74,14 +83,11 @@
             <!-- Start featured -->
             <div id="featured">
                 <!-- The slider -->
-                <div id="sliderothers">
-                      <div class="center90percent">
-						<h2> <a href="https://moacscan.daszichan.com/public/moac/ledger/?o=-1.0">Ledger txs Stats </a></h2>
-						<h2> <a href="https://moacscan.daszichan.com/public/moac/ledger/?o=-2.0">Ledger tps Stats</a></h2>
-					  </div>
-                </div>
+            	<div class="grid-11">
+					<h2 class="center">BLock Daily Maximum TXS And TPS</h2>
+				</div>
                 <div id="slider">
-                      <div class="center90percent" id="chart"></div>
+                      <div class="grid-11" id="chart"></div>
                 </div>
                 <!--end slider -->
             </div>
@@ -127,7 +133,7 @@
         <div class="container_12">
             <div id="featuredothers">
                 <div id="sliderothers">
-                      <div class="center90percent" id="c6">
+                      <div class="grid-11" id="c6">
 					  <script type="text/javascript" src="https://ssl.gstatic.com/trends_nrtr/1420_RC05/embed_loader.js"></script> <script type="text/javascript"> trends.embed.renderExploreWidget("TIMESERIES", {"comparisonItem":[{"keyword":"MOAC","geo":"","time":"today 12-m"},{"keyword":"墨客","geo":"","time":"today 12-m"}],"category":0,"property":""}, {"exploreQuery":"q=MOAC,%E5%A2%A8%E5%AE%A2&date=today 12-m,today 12-m","guestPath":"https://trends.google.com:443/trends/embed/"}); </script>
                       </div>
                 </div>

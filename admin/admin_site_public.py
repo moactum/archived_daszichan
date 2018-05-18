@@ -39,9 +39,9 @@ class TransactionAdmin(admin.ModelAdmin):
 		return True
 
 class AdminSite(admin.sites.AdminSite):
-	site_header = 'public'
-	site_title  = 'public'
-	index_title = 'public'
+	site_header = 'MOACscan'
+	site_title  = 'MOACscan'
+	index_title = 'MOACscan'
 
 	def has_permission(self,request):
 		return True

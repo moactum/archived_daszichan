@@ -70,11 +70,11 @@ def pre_save_ledger(sender, instance, **kwargs):
 def post_save_transaction_moac(sender, instance, created, **kwargs):
 	if created:
 		statledger,created = StatLedger.objects.get_or_create(date=instance.date)
-		if not statledger.ledger_txs or stateledger.ledger_txs.num_txs < instance.num_txs:
+		if not statledger.ledger_txs or statledger.ledger_txs.num_txs < instance.num_txs:
 			statledger.ledger_txs = instance
 			statledger.save()
-		if not statledger.ledger_tps or stateledger.ledger_tps.tps < instance.tps:
-			statledget.ledger_tps = instance
+		if not statledger.ledger_tps or statledger.ledger_tps.tps < instance.tps:
+			statledger.ledger_tps = instance
 			statledger.save()
 @receiver(pre_save, sender=Address)
 def pre_save_address(sender, instance, **kwargs):
