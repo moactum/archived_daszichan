@@ -39,8 +39,19 @@ class Ledger(models.Model):
 		ordering = ('number',)
 
 	def __str__(self):
-		return self.hash
+		return str(self.number)
 
+	@classmethod
+	def verify(cls,start=0):
+		last = cls.objects.get(number=start)
+		for l in cls.objects.filter(number__gt=start):
+			if l.number != last.number + 1:
+				print(l)
+				print(last)
+				return False
+			last = l
+			print(l.number)
+		return True
 class Uncle(models.Model):
 	hash = models.CharField(max_length=66)
 	#number = models.IntegerField("hight",default=0)
@@ -56,6 +67,7 @@ class Uncle(models.Model):
 
 	def __str__(self):
 		return self.hash
+		#return "%s:%s" % (self.number,self.hash)
 
 class StatLedger(models.Model):
 	date = models.DateField(editable=False,unique=True)

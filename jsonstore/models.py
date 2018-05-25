@@ -99,7 +99,7 @@ class JsonMoacLedger(models.Model):
 							tx_to.update_display()
 					else:
 						tx_to = None
-					transaction, created = Transaction.objects.get_or_create(ledger=ledger,hash=txr['hash'],tx_from=tx_from, tx_to=tx_to, value=int(float(txr['value'])) / 1000000000)
+					transaction, created = Transaction.objects.get_or_create(ledger=ledger,hash=txr['hash'],tx_from=tx_from, tx_to=tx_to, value=int(float(txr['value'])) / 1000000000, index=int(txr['transactionIndex']))
 					transaction.save()
 				sys.stdout.write('\n')
 			for uncle_hash in self.data['uncles']:
