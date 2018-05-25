@@ -26,8 +26,9 @@ class Address(models.Model):
 
 class Ledger(models.Model):
 	hash = models.CharField(max_length=66,primary_key=True)
-	number = models.IntegerField("hight",default=0)
+	number = models.IntegerField("hight",default=0,unique=True)
 	num_txs = models.IntegerField(default=0)
+	duration = models.IntegerField(default=0)
 	tps = models.IntegerField(default=0)
 	difficulty = models.BigIntegerField(default=0)
 	nonce = models.CharField(max_length=20,default='')
@@ -43,14 +44,23 @@ class Ledger(models.Model):
 
 	@classmethod
 	def verify(cls,start=0):
+		from jsonstore.models import JsonMoacLedger
 		last = cls.objects.get(number=start)
 		for l in cls.objects.filter(number__gt=start):
 			if l.number != last.number + 1:
 				print(l)
 				print(last)
 				return False
+			if len(JsonMoacLedger.objects.get(id=l.number).data['transactions']) != l.transaction_set.count():
+				print(l)
+				jml = JsonMoacLedger.objects.get(id=l.number)
+				l.delete()
+				jml.proc_ledger()
+				l = cls.objects.get(number=jml.id)
+				#return False
 			last = l
-			print(l.number)
+			if l.number % 1000 == 0:
+				print(l)
 		return True
 class Uncle(models.Model):
 	hash = models.CharField(max_length=66)
@@ -84,6 +94,7 @@ class Transaction(models.Model):
 
 	class Meta:
 		ordering = ('ledger','index')
+		unique_together = ('ledger','index')
 
 	def __str__(self):
 		return self.hash

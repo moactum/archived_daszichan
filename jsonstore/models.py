@@ -83,27 +83,34 @@ class JsonMoacLedger(models.Model):
 			miner,created = Address.objects.get_or_create(address=self.data['miner'])
 			if created:
 				miner.update_display()
-			num_txs = len(self.data['transactions'])
-			tps = int(num_txs / (self.data['timestamp'] - JsonMoacLedger.objects.get(id=self.id - 1).data['timestamp']))
-			ledger = Ledger(hash=self.hash, number=self.id, num_txs=num_txs, tps=tps, difficulty = self.data['difficulty'], nonce = self.data['nonce'], miner=miner, timestamp=self.data['timestamp'])
-			ledger.save()
-			if self.data['transactions']:
-				for txr in self.data['transactions']:
-					sys.stdout.write("%s, " % txr['transactionIndex'])
-					tx_from, created = Address.objects.get_or_create(address=txr['from'])
-					if created:
-						tx_from.update_display()
-					if txr['to']:
-						tx_to, created = Address.objects.get_or_create(address=txr['to'])
+			timestamp=self.data['timestamp']
+			if self.id == 0:
+				timestamp = JsonMoacLedger.objects.get(id=1).data['timestamp'] - 10
+				ledger = Ledger(hash=self.hash, number=self.id, difficulty = self.data['difficulty'], nonce = self.data['nonce'], miner=miner, timestamp=timestamp)
+				ledger.save()
+			else:
+				duration = int(timestamp - Ledger.objects.get(number=self.id -1).timestamp)
+				num_txs = len(self.data['transactions'])
+				tps = int(num_txs / duration)
+				ledger = Ledger(hash=self.hash, number=self.id, num_txs=num_txs, tps=tps, duration=duration, difficulty = self.data['difficulty'], nonce = self.data['nonce'], miner=miner, timestamp=timestamp)
+				ledger.save()
+				if self.data['transactions']:
+					for txr in self.data['transactions']:
+						sys.stdout.write("%s, " % txr['transactionIndex'])
+						tx_from, created = Address.objects.get_or_create(address=txr['from'])
 						if created:
-							tx_to.update_display()
-					else:
-						tx_to = None
-					transaction, created = Transaction.objects.get_or_create(ledger=ledger,hash=txr['hash'],tx_from=tx_from, tx_to=tx_to, value=int(float(txr['value'])) / 1000000000, index=int(txr['transactionIndex']))
-					transaction.save()
-				sys.stdout.write('\n')
-			for uncle_hash in self.data['uncles']:
-				uncle,created = Uncle.objects.get_or_create(hash=uncle_hash,ledger=ledger)
+							tx_from.update_display()
+						if txr['to']:
+							tx_to, created = Address.objects.get_or_create(address=txr['to'])
+							if created:
+								tx_to.update_display()
+						else:
+							tx_to = None
+						transaction, created = Transaction.objects.get_or_create(ledger=ledger,hash=txr['hash'],tx_from=tx_from, tx_to=tx_to, value=int(float(txr['value'])) / 1000000000, index=int(txr['transactionIndex']))
+						transaction.save()
+					sys.stdout.write('\n')
+				for uncle_hash in self.data['uncles']:
+					uncle,created = Uncle.objects.get_or_create(hash=uncle_hash,ledger=ledger)
 			
 	@classmethod
 	def verify(cls,start=0):

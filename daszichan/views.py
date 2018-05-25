@@ -94,5 +94,5 @@ def homepage(_):
 			},
 		)
 
-	return render_to_response('index.html', {'chart_list': [ cht_ledger ], 'Addresses': Address.objects.count(), 'Ledgers': Ledger.objects.count(), 'Transactions': Transaction.objects.count(), 'Uncles': Uncle.objects.count(), 'difficulty_in_tera': int(Ledger.objects.last().difficulty // 1e12), 'uncle_ratio': int(Uncle.objects.count() * 100 / Ledger.objects.count())})
+	return render_to_response('index.html', {'chart_list': [ cht_ledger ], 'Addresses': Address.objects.count(), 'Ledgers': Ledger.objects.count(), 'Transactions': Transaction.objects.count(), 'Uncles': Uncle.objects.count(), 'difficulty_in_tera': int(Ledger.objects.last().difficulty // 1e12), 'uncle_ratio': int(Uncle.objects.count() * 100 / Ledger.objects.count()), 'MoacMined': 2 * (Ledger.objects.count() + Uncle.objects.count())})
 

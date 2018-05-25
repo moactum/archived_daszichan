@@ -21,12 +21,18 @@ class LedgerAdmin(admin.ModelAdmin):
 	list_display = ('number','num_txs','tps','date','timestamp','miner','hash')
 
 	def has_change_permission(self,request,obj=None):
-		if obj:
-			return False
+		#if obj:
+		#	return False
 		return True
 		#return request.user.is_anonymous
 	def has_module_permission(self,request):
 		return True
+
+	def save_model(self, request, obj, form, change):
+		pass
+
+	def delete_model(request, obj):
+		pass
 
 class TransactionAdmin(admin.ModelAdmin):
 	list_display = ('ledger','tx_from','tx_to','value','index','hash')
@@ -34,11 +40,15 @@ class TransactionAdmin(admin.ModelAdmin):
 	ordering = ('-ledger__number','-index')
 
 	def has_change_permission(self,request,obj=None):
-		if obj:
-			return False
+		#if obj:
+		#	return False
 		return True
 	def has_module_permission(self,request):
 		return True
+	def save_model(self, request, obj, form, change):
+		pass
+	def delete_model(request, obj):
+		pass
 
 class AdminSite(admin.sites.AdminSite):
 	site_header = 'MOACscan'
