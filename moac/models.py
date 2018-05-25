@@ -34,10 +34,25 @@ class Ledger(models.Model):
 	timestamp = models.IntegerField(default=0)
 	date = models.DateField(editable=False,null=True,default=None)
 	miner = models.ForeignKey(Address, on_delete=models.PROTECT, editable=False,default=None, null=True)
-	#parent = TreeForeignKey('self',null=True, blank=True, on_delete=models.SET_NULL, related_name='children', db_index=True)
 
 	class Meta:
 		ordering = ('number',)
+
+	def __str__(self):
+		return self.hash
+
+class Uncle(models.Model):
+	hash = models.CharField(max_length=66)
+	#number = models.IntegerField("hight",default=0)
+	#difficulty = models.BigIntegerField(default=0)
+	#nonce = models.CharField(max_length=20,default='')
+	#timestamp = models.IntegerField(default=0)
+	#miner = models.ForeignKey(Address, on_delete=models.PROTECT, editable=False,default=None, null=True)
+	ledger = models.ForeignKey(Ledger, on_delete=models.CASCADE, editable=False)
+
+	class Meta:
+		ordering = ('ledger',)
+		unique_together = ('hash', 'ledger')
 
 	def __str__(self):
 		return self.hash
@@ -67,7 +82,7 @@ def pre_save_ledger(sender, instance, **kwargs):
 		instance.date = timezone.make_aware(timezone.datetime.fromtimestamp(instance.timestamp)).date()
 
 @receiver(post_save, sender=Ledger)
-def post_save_transaction_moac(sender, instance, created, **kwargs):
+def post_save_ledger(sender, instance, created, **kwargs):
 	if created:
 		statledger,created = StatLedger.objects.get_or_create(date=instance.date)
 		if not statledger.ledger_txs or statledger.ledger_txs.num_txs < instance.num_txs:
@@ -76,6 +91,3 @@ def post_save_transaction_moac(sender, instance, created, **kwargs):
 		if not statledger.ledger_tps or statledger.ledger_tps.tps < instance.tps:
 			statledger.ledger_tps = instance
 			statledger.save()
-@receiver(pre_save, sender=Address)
-def pre_save_address(sender, instance, **kwargs):
-	pass

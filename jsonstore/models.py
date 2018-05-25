@@ -73,9 +73,12 @@ class JsonMoacLedger(models.Model):
 			l.delete()
 		super(JsonMoacLedger,self).delete()
 
-	def proc_ledger(self):
+	def proc_ledger(self,do_uncle=False):
 		try:
 			ledger = Ledger.objects.get(hash=self.hash)
+			if do_uncle:
+				for uncle_hash in self.data['uncles']:
+					uncle,created = Uncle.objects.get_or_create(hash=uncle_hash,ledger=ledger)
 		except Ledger.DoesNotExist:
 			miner,created = Address.objects.get_or_create(address=self.data['miner'])
 			if created:
@@ -99,6 +102,8 @@ class JsonMoacLedger(models.Model):
 					transaction, created = Transaction.objects.get_or_create(ledger=ledger,hash=txr['hash'],tx_from=tx_from, tx_to=tx_to, value=int(float(txr['value'])) / 1000000000)
 					transaction.save()
 				sys.stdout.write('\n')
+			for uncle_hash in self.data['uncles']:
+				uncle,created = Uncle.objects.get_or_create(hash=uncle_hash,ledger=ledger)
 			
 	@classmethod
 	def verify(cls,start=0):
@@ -177,10 +182,7 @@ def pre_save_ledger_jingtum(sender, instance, **kwargs):
 def pre_save_ledger_moac(sender, instance, **kwargs):
 	pass
 
-@receiver(post_save, sender=JsonJingtumLedger)
-def pre_save_transaction_jingtum(sender, instance, created, **kwargs):
-	pass
 @receiver(post_save, sender=JsonMoacLedger)
-def pre_save_transaction_moac(sender, instance, created, **kwargs):
+def pre_save_ledger_moac(sender, instance, created, **kwargs):
 	if created:
 		instance.proc_ledger()
