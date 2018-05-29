@@ -1,19 +1,26 @@
 #!/usr/bin/env python
 
 from django.db import models
-import re, subprocess, pprint, json
+import re, sys, subprocess, pprint, json
 from decimal import Decimal
 import datetime
 from django.dispatch import receiver
 from django.db.models.signals import pre_save, post_save
 #from mptt.models import MPTTModel, TreeForeignKey
 from django.utils import timezone
+from urllib import request
 
 class Address(models.Model):
 	id = models.BigAutoField(primary_key=True)
 	address = models.CharField(max_length=43,unique=True,default='0x')
 	display = models.CharField(max_length=16,default='')
-	balance = models.DecimalField(max_digits=13,decimal_places=4,editable=False,default=Decimal(0))
+	balance = models.DecimalField(max_digits=18,decimal_places=9,editable=False,default=Decimal(0))
+	flag_balance = models.BooleanField("balance synced", default=False,editable=False)
+	balance_calculate = models.DecimalField(max_digits=18,decimal_places=9,editable=False,default=Decimal(0))
+	timestamp_calculate = models.DateTimeField(blank=True,null=True,default=None,editable=False)
+	balance_query = models.DecimalField(max_digits=18,decimal_places=9,editable=False,default=Decimal(0))
+	timestamp_query = models.DateTimeField(blank=True,null=True,default=None,editable=False)
+
 
 	class Meta:
 		ordering = ('address', )
@@ -25,6 +32,29 @@ class Address(models.Model):
 		if not self.display:
 			self.display = "addr-%08d"  % self.id
 			self.save()
+
+	def update_balance(self):
+		pass
+
+	def query_balance(self,url=''):
+		if self.flag_balance:
+			pass
+		if not url:
+			url = "http://localhost:3003/api/address/%s" % self.address
+		try:
+			response = request.urlopen(url, timeout=30)
+			if response.status == 200:
+				result = json.loads(response.read().decode())
+				self.balance_query = result['balance_moac']
+				self.timestamp_query = timezone.now()
+				self.save()
+				out = sys.stdout.write("... queried balance for %s\n" % (self.address))
+			else:
+				out = sys.stdout.write("..!..http returned status %s\n" % response.status)
+		except Exception as e:
+			out = sys.stderr.write("... exception happend for %s/%s\n" % (self.id,index))
+			print(e)
+			time.sleep(3)
 
 class Ledger(models.Model):
 	hash = models.CharField(max_length=66,primary_key=True)
