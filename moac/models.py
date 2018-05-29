@@ -15,6 +15,7 @@ class Address(models.Model):
 	address = models.CharField(max_length=43,unique=True,default='0x')
 	display = models.CharField(max_length=16,default='')
 	balance = models.DecimalField(max_digits=18,decimal_places=9,editable=False,default=Decimal(0))
+	timestamp = models.DateTimeField(blank=True,null=True,default=None,editable=False)
 	flag_balance = models.BooleanField("balance synced", default=False,editable=False)
 	balance_calculate = models.DecimalField(max_digits=18,decimal_places=9,editable=False,default=Decimal(0))
 	timestamp_calculate = models.DateTimeField(blank=True,null=True,default=None,editable=False)
@@ -33,8 +34,22 @@ class Address(models.Model):
 			self.display = "addr-%08d"  % self.id
 			self.save()
 
-	def update_balance(self):
-		pass
+	def update_balance(self,url=''):
+		if not url:
+			url = "http://localhost:3003/api/address/%s" % self.address
+		try:
+			response = request.urlopen(url, timeout=30)
+			if response.status == 200:
+				result = json.loads(response.read().decode())
+				self.balance = result['balance_moac']
+				self.timestamp = timezone.now()
+				self.save()
+				out = sys.stdout.write("... queried balance for %s\n" % (self.address))
+			else:
+				out = sys.stdout.write("..!..http returned status %s\n" % response.status)
+		except Exception as e:
+			out = sys.stderr.write("... exception happend for %s/%s\n" % (self.id,index))
+			print(e)
 
 	def query_balance(self,url=''):
 		if self.flag_balance:

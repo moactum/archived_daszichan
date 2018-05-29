@@ -92,6 +92,7 @@ class JsonMoacLedger(models.Model):
 		return True
 
 	def proc_ledger(self,do_uncle=False):
+		addresses = set()
 		try:
 			ledger = Ledger.objects.get(hash=self.hash)
 			if do_uncle:
@@ -99,6 +100,7 @@ class JsonMoacLedger(models.Model):
 					uncle,created = Uncle.objects.get_or_create(hash=uncle_hash,ledger=ledger)
 					jmu = JsonMoacUncle.objects.get(hash=uncle_hash,ledger=JsonMoacLedger.objects.get(hash=ledger.hash))
 					miner,created = Address.objects.get_or_create(address=jmu.data['miner'])
+					addresses.add(miner)
 					if created:
 						miner.update_display()
 					uncle.miner = miner
@@ -106,6 +108,7 @@ class JsonMoacLedger(models.Model):
 					uncle.save()
 		except Ledger.DoesNotExist:
 			miner,created = Address.objects.get_or_create(address=self.data['miner'])
+			addresses.add(miner)
 			if created:
 				miner.update_display()
 			timestamp=self.data['timestamp']
@@ -120,13 +123,16 @@ class JsonMoacLedger(models.Model):
 				ledger = Ledger(hash=self.hash, number=self.id, num_txs=num_txs, tps=tps, duration=duration, difficulty = self.data['difficulty'], nonce = self.data['nonce'], miner=miner, timestamp=timestamp)
 				ledger.save()
 				if self.data['transactions']:
+					sys.stdout.write('update transactions:\n')
 					for txr in self.data['transactions']:
 						sys.stdout.write("%s, " % txr['transactionIndex'])
 						tx_from, created = Address.objects.get_or_create(address=txr['from'])
+						addresses.add(tx_from)
 						if created:
 							tx_from.update_display()
 						if txr['to']:
 							tx_to, created = Address.objects.get_or_create(address=txr['to'])
+							addresses.add(tx_to)
 							if created:
 								tx_to.update_display()
 						else:
@@ -138,11 +144,17 @@ class JsonMoacLedger(models.Model):
 					uncle,created = Uncle.objects.get_or_create(hash=uncle_hash,ledger=ledger)
 					jmu = JsonMoacUncle.objects.get(hash=uncle_hash,ledger=JsonMoacLedger.objects.get(hash=ledger.hash))
 					miner,created = Address.objects.get_or_create(address=jmu.data['miner'])
+					addresses.add(miner)
 					if created:
 						miner.update_display()
 					uncle.miner = miner
 					uncle.number = jmu.data['number']
 					uncle.save()
+			sys.stdout.write('update balances:\n')
+			for address in addresses:
+				sys.stdout.write("%s, " % address.address)
+				address.update_balance()
+			sys.stdout.write('\n')
 			
 	@classmethod
 	def verify(cls,start=0):

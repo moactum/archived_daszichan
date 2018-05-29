@@ -18,7 +18,7 @@ class JsonMoacLedgerAdmin(admin.ModelAdmin):
 
 	
 class AddressAdmin(admin.ModelAdmin):
-	list_display = ('display','balance_query','balance_calculate','timestamp_query','timestamp_calculate','address')
+	list_display = ('display','balance','timestamp','address')
 	readonly_fields = ('address','balance', 'display')
 
 	def has_change_permission(self,request,obj=None):
