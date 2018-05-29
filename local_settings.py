@@ -17,10 +17,7 @@ INSTALLED_APPS += [
 	'jsonstore',
 	'jingtum',
 	'moac',
-	#'markup_deprecated',
-	'syntax_colorize',
 	'chartit',
-	#'demoproject',
 	#'rest_framework_simplejwt.token_blacklist',
 	#'rest_framework.authtoken',
 ]
