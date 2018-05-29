@@ -13,12 +13,14 @@ class Address(models.Model):
 	id = models.BigAutoField(primary_key=True)
 	address = models.CharField(max_length=43,unique=True,default='0x')
 	display = models.CharField(max_length=16,default='')
+	balance = models.DecimalField(max_digits=13,decimal_places=4,editable=False,default=Decimal(0))
 
 	class Meta:
 		ordering = ('address', )
 
 	def __str__(self):
 		return self.display
+
 	def update_display(self):
 		if not self.display:
 			self.display = "addr-%08d"  % self.id
@@ -64,11 +66,11 @@ class Ledger(models.Model):
 		return True
 class Uncle(models.Model):
 	hash = models.CharField(max_length=66)
-	#number = models.IntegerField("hight",default=0)
+	number = models.IntegerField("hight",default=0)
 	#difficulty = models.BigIntegerField(default=0)
 	#nonce = models.CharField(max_length=20,default='')
 	#timestamp = models.IntegerField(default=0)
-	#miner = models.ForeignKey(Address, on_delete=models.PROTECT, editable=False,default=None, null=True)
+	miner = models.ForeignKey(Address, on_delete=models.PROTECT, editable=False,default=None, null=True)
 	ledger = models.ForeignKey(Ledger, on_delete=models.CASCADE, editable=False)
 
 	class Meta:

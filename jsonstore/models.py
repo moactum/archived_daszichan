@@ -5,7 +5,7 @@ from django.dispatch import receiver
 from django.db.models.signals import pre_save, post_save
 from django.contrib.postgres.fields import JSONField
 from mptt.models import MPTTModel, TreeForeignKey
-from urllib import request
+from urllib import error, request
 import sys, random, time, json
 from moac.models import * 
 
@@ -47,15 +47,6 @@ class JsonJingtumLedger(models.Model):
 				time.sleep(60 * random.randint(1,10))
 		return ledger
 
-class JsonJingtumTransaction(MPTTModel):
-	hash = models.CharField(max_length=64,unique=True,editable=False)
-	data = JSONField()
-	ledger = models.ForeignKey(JsonJingtumLedger, null=True, blank=True, default=None, editable=False, on_delete=models.SET_NULL)
-	parent = TreeForeignKey('self',null=True, blank=True, on_delete=models.SET_NULL, related_name='children', db_index=True)
-
-	def __str__(self):
-		return self.hash
-
 class JsonMoacLedger(models.Model):
 	hash = models.CharField(max_length=66,unique=True,editable=False)
 	parent_hash = models.CharField(max_length=66,default='',unique=True,editable=False)
@@ -73,12 +64,46 @@ class JsonMoacLedger(models.Model):
 			l.delete()
 		super(JsonMoacLedger,self).delete()
 
+	def sync_uncles(self,url=''):
+		if self.synced:
+			return True
+		if not url:
+			url = "http://localhost:3003/api/uncle/"
+		for index in range(len(self.data['uncles'])):
+			sys.stdout.write("\t...trying %s/%s\n" % (self.id,index))
+			try:
+				response = request.urlopen("%s%s/%s" % (url,self.id,index), timeout=30)
+				if response.status == 200:
+					result = json.loads(response.read().decode())
+					hash = result['hash']
+					uncle = JsonMoacUncle(hash=hash,ledger=self,data=result)
+					uncle.save()
+					out = sys.stdout.write("... retrieved uncle for %s/%s\n" % (self.id,index))
+				else:
+					out = sys.stdout.write("..!..http returned status %s\n" % response.status)
+					return False
+			except Exception as e:
+				out = sys.stderr.write("... exception happend for %s/%s\n" % (self.id,index))
+				print(e)
+				return False
+		self.synced = True
+		self.save()
+		sys.stdout.write("\tsynced unclues for ledger %s\n" % self.id)
+		return True
+
 	def proc_ledger(self,do_uncle=False):
 		try:
 			ledger = Ledger.objects.get(hash=self.hash)
 			if do_uncle:
 				for uncle_hash in self.data['uncles']:
 					uncle,created = Uncle.objects.get_or_create(hash=uncle_hash,ledger=ledger)
+					jmu = JsonMoacUncle.objects.get(hash=uncle_hash,ledger=JsonMoacLedger.objects.get(hash=ledger.hash))
+					miner,created = Address.objects.get_or_create(address=jmu.data['miner'])
+					if created:
+						miner.update_display()
+					uncle.miner = miner
+					uncle.number = jmu.data['number']
+					uncle.save()
 		except Ledger.DoesNotExist:
 			miner,created = Address.objects.get_or_create(address=self.data['miner'])
 			if created:
@@ -111,6 +136,13 @@ class JsonMoacLedger(models.Model):
 					sys.stdout.write('\n')
 				for uncle_hash in self.data['uncles']:
 					uncle,created = Uncle.objects.get_or_create(hash=uncle_hash,ledger=ledger)
+					jmu = JsonMoacUncle.objects.get(hash=uncle_hash,ledger=JsonMoacLedger.objects.get(hash=ledger.hash))
+					miner,created = Address.objects.get_or_create(address=jmu.data['miner'])
+					if created:
+						miner.update_display()
+					uncle.miner = miner
+					uncle.number = jmu.data['number']
+					uncle.save()
 			
 	@classmethod
 	def verify(cls,start=0):
@@ -172,14 +204,22 @@ class JsonMoacLedger(models.Model):
 		sys.stdout.write("\tsynced %s" % height)
 		return ledger
 
-class JsonMoacTransaction(MPTTModel):
-	hash = models.CharField(max_length=64,unique=True,editable=False)
+class JsonMoacUncle(models.Model):
+	hash = models.CharField(max_length=66,editable=False)
 	data = JSONField()
-	ledger = models.ForeignKey(JsonMoacLedger, null=True, blank=True, default=None, editable=False, on_delete=models.SET_NULL)
-	parent = TreeForeignKey('self',null=True, blank=True, on_delete=models.SET_NULL, related_name='children', db_index=True)
+	synced = models.BooleanField(default=False, editable=False)
+	ledger = models.ForeignKey(JsonMoacLedger, on_delete=models.CASCADE)
 
+	class Meta:
+		ordering = ('ledger',)
+		unique_together = ('hash','ledger')
 	def __str__(self):
-		return self.hash
+		return "%s: %s" % (self.ledger.id, self.hash)
+
+	def delete(self):
+		for u in Uncle.objects.filter(hash=self.hash):
+			u.delete()
+		super(JsonMoacUncle,self).delete()
 
 @receiver(pre_save, sender=JsonJingtumLedger)
 def pre_save_ledger_jingtum(sender, instance, **kwargs):
@@ -190,6 +230,9 @@ def pre_save_ledger_moac(sender, instance, **kwargs):
 	pass
 
 @receiver(post_save, sender=JsonMoacLedger)
-def pre_save_ledger_moac(sender, instance, created, **kwargs):
+def post_save_ledger_moac(sender, instance, created, **kwargs):
 	if created:
+		# retrieve JsonMoacUncles
+		instance.sync_uncles()
+		# generate ledgers, transactions and uncles
 		instance.proc_ledger()
