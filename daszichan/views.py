@@ -31,6 +31,20 @@ def homepage(_):
 		]
 	)
 
+	ds_balance = DataPool(
+		series=[
+		{
+			'options': {
+				'source': Address.objects.order_by('-balance')[:50]
+				#'source': OrgCount.objects.filter(date__gte=timezone.datetime(2017,11,1),org__name='ibmcom')
+			},
+			'terms': [
+				'address',
+				'balance'
+			]
+		}
+		]
+	)
 
 	cht_ledger = Chart(
 		datasource=ds_ledger,
@@ -94,5 +108,27 @@ def homepage(_):
 			},
 		)
 
-	return render_to_response('index.html', {'chart_list': [ cht_ledger ], 'Addresses': Address.objects.count(), 'Ledgers': Ledger.objects.count(), 'Transactions': Transaction.objects.count(), 'Uncles': Uncle.objects.count(), 'difficulty_in_tera': int(Ledger.objects.last().difficulty // 1e12), 'uncle_ratio': int(Uncle.objects.count() * 100 / Ledger.objects.count()), 'MoacMined': 2 * (Ledger.objects.count() + Uncle.objects.count()), 'QueryableMoac': int(Address.objects.aggregate(Sum('balance'))['balance__sum'])})
+	cht_balance = Chart(
+		datasource=ds_balance,
+		series_options=[
+		{
+			'options': {
+				'type': 'pie',
+				'stacking': False,
+			},
+			'terms': {
+				'address': [
+					'balance',
+					],
+			}
+		}
+		],
+		chart_options={
+			'title': {
+				'text': 'Token Distribution top 50'
+			}
+			},
+		)
+
+	return render_to_response('index.html', {'chart_list': [ cht_ledger, cht_balance ], 'Wallets': Address.objects.filter(is_wallet=True).count(), 'Contracts': Address.objects.filter(is_contract=True).count(), 'Ledgers': Ledger.objects.count(), 'Transactions': Transaction.objects.count(), 'Uncles': Uncle.objects.count(), 'difficulty_in_tera': int(Ledger.objects.last().difficulty // 1e12), 'uncle_ratio': int(Uncle.objects.count() * 100 / Ledger.objects.count()), 'MoacMined': 2 * (Ledger.objects.count() + Uncle.objects.count()), 'QueryableMoac': int(Address.objects.aggregate(Sum('balance'))['balance__sum'])})
 

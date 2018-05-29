@@ -14,6 +14,9 @@ class Address(models.Model):
 	id = models.BigAutoField(primary_key=True)
 	address = models.CharField(max_length=43,unique=True,default='0x')
 	display = models.CharField(max_length=16,default='')
+	is_contract = models.BooleanField(default=False,editable=False)
+	is_wallet = models.BooleanField(default=True,editable=False)
+	contract_code = models.TextField(default='',editable=False)
 	balance = models.DecimalField(max_digits=18,decimal_places=9,editable=False,default=Decimal(0))
 	timestamp = models.DateTimeField(blank=True,null=True,default=None,editable=False)
 	flag_balance = models.BooleanField("balance synced", default=False,editable=False)
@@ -33,6 +36,25 @@ class Address(models.Model):
 		if not self.display:
 			self.display = "addr-%08d"  % self.id
 			self.save()
+
+	def update_code(self,url=''):
+		if not url:
+			url = "http://localhost:3003/api/address/%s/code" % self.address
+		try:
+			response = request.urlopen(url, timeout=30)
+			if response.status == 200:
+				result = json.loads(response.read().decode())
+				self.contract_code = result['code']
+				if self.contract_code and self.contract_code != '0x':
+					self.is_contract = True
+					self.is_wallet = False
+				self.save()
+				out = sys.stdout.write("... determined contract for %s\n" % (self.address))
+			else:
+				out = sys.stdout.write("..!..http returned status %s\n" % response.status)
+		except Exception as e:
+			out = sys.stderr.write("... exception happend for %s/%s\n" % (self.id,index))
+			print(e)
 
 	def update_balance(self,url=''):
 		if not url:
@@ -161,3 +183,8 @@ def post_save_ledger(sender, instance, created, **kwargs):
 		if not statledger.ledger_tps or statledger.ledger_tps.tps < instance.tps:
 			statledger.ledger_tps = instance
 			statledger.save()
+
+@receiver(post_save, sender=Address)
+def post_save_ledger(sender, instance, created, **kwargs):
+	if created:
+		self.update_code()
