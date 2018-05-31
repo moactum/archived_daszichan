@@ -11,19 +11,17 @@ from django.utils import timezone
 from urllib import request
 
 class Address(models.Model):
-	id = models.BigAutoField(primary_key=True)
-	address = models.CharField(max_length=43,unique=True,default='0x')
-	display = models.CharField(max_length=16,default='')
+	address = models.CharField(max_length=43,unique=True)
+	display = models.CharField(max_length=24,default='')
 	is_contract = models.BooleanField(default=False,editable=False)
-	is_wallet = models.BooleanField(default=True,editable=False)
-	contract_code = models.TextField(default='',editable=False)
+	code = models.TextField(default='',editable=False)
 	balance = models.DecimalField(max_digits=18,decimal_places=9,editable=False,default=Decimal(0))
 	timestamp = models.DateTimeField(blank=True,null=True,default=None,editable=False)
-	flag_balance = models.BooleanField("balance synced", default=False,editable=False)
-	balance_calculate = models.DecimalField(max_digits=18,decimal_places=9,editable=False,default=Decimal(0))
-	timestamp_calculate = models.DateTimeField(blank=True,null=True,default=None,editable=False)
-	balance_query = models.DecimalField(max_digits=18,decimal_places=9,editable=False,default=Decimal(0))
-	timestamp_query = models.DateTimeField(blank=True,null=True,default=None,editable=False)
+#	flag_balance = models.BooleanField("balance synced", default=False,editable=False)
+#	balance_calculate = models.DecimalField(max_digits=18,decimal_places=9,editable=False,default=Decimal(0))
+#	timestamp_calculate = models.DateTimeField(blank=True,null=True,default=None,editable=False)
+#	balance_query = models.DecimalField(max_digits=18,decimal_places=9,editable=False,default=Decimal(0))
+#	timestamp_query = models.DateTimeField(blank=True,null=True,default=None,editable=False)
 
 
 	class Meta:
@@ -32,10 +30,20 @@ class Address(models.Model):
 	def __str__(self):
 		return self.display
 
-	def update_display(self):
+	def update_display(self,force=False):
 		if not self.display:
-			self.display = "addr-%08d"  % self.id
+			if self.is_contract:
+				self.display = "contract-%08d" % self.id
+			else:
+				self.display = "wallet-%08d"  % self.id
 			self.save()
+		elif force:
+			if self.display.startswith('addr'):
+				if self.is_contract:
+					self.display = "contract-%08d" % self.id
+				else:
+					self.display = "wallet-%08d"  % self.id
+				self.save()
 
 	def update_code(self,url=''):
 		if not url:
@@ -44,17 +52,17 @@ class Address(models.Model):
 			response = request.urlopen(url, timeout=30)
 			if response.status == 200:
 				result = json.loads(response.read().decode())
-				self.contract_code = result['code']
-				if self.contract_code and self.contract_code != '0x':
+				self.code = result['code']
+				if self.code and self.code != '0x':
 					self.is_contract = True
-					self.is_wallet = False
 				self.save()
-				out = sys.stdout.write("... determined contract for %s\n" % (self.address))
+				out = sys.stdout.write("\t... determined contract\n")
 			else:
 				out = sys.stdout.write("..!..http returned status %s\n" % response.status)
 		except Exception as e:
 			out = sys.stderr.write("... exception happend for %s/%s\n" % (self.id,index))
 			print(e)
+		self.update_display()
 
 	def update_balance(self,url=''):
 		if not url:
@@ -66,7 +74,6 @@ class Address(models.Model):
 				self.balance = result['balance_moac']
 				self.timestamp = timezone.now()
 				self.save()
-				out = sys.stdout.write("... queried balance for %s\n" % (self.address))
 			else:
 				out = sys.stdout.write("..!..http returned status %s\n" % response.status)
 		except Exception as e:
@@ -94,8 +101,7 @@ class Address(models.Model):
 			time.sleep(3)
 
 class Ledger(models.Model):
-	hash = models.CharField(max_length=66,primary_key=True)
-	number = models.IntegerField("hight",default=0,unique=True)
+	hash = models.CharField(max_length=66,unique=True)
 	num_txs = models.IntegerField(default=0)
 	duration = models.IntegerField(default=0)
 	tps = models.IntegerField(default=0)
@@ -106,29 +112,29 @@ class Ledger(models.Model):
 	miner = models.ForeignKey(Address, on_delete=models.PROTECT, editable=False,default=None, null=True)
 
 	class Meta:
-		ordering = ('number',)
+		ordering = ('id',)
 
 	def __str__(self):
-		return str(self.number)
+		return str(self.id)
 
 	@classmethod
 	def verify(cls,start=0):
 		from jsonstore.models import JsonMoacLedger
-		last = cls.objects.get(number=start)
-		for l in cls.objects.filter(number__gt=start):
-			if l.number != last.number + 1:
+		last = cls.objects.get(id=start)
+		for l in cls.objects.filter(id__gt=start):
+			if l.id != last.id + 1:
 				print(l)
 				print(last)
 				return False
-			if len(JsonMoacLedger.objects.get(id=l.number).data['transactions']) != l.transaction_set.count():
+			if len(JsonMoacLedger.objects.get(id=l.id).data['transactions']) != l.transaction_set.count():
 				print(l)
-				jml = JsonMoacLedger.objects.get(id=l.number)
+				jml = JsonMoacLedger.objects.get(id=l.id)
 				l.delete()
 				jml.proc_ledger()
-				l = cls.objects.get(number=jml.id)
+				l = cls.objects.get(id=jml.id)
 				#return False
 			last = l
-			if l.number % 1000 == 0:
+			if l.id % 1000 == 0:
 				print(l)
 		return True
 class Uncle(models.Model):
@@ -157,7 +163,9 @@ class Transaction(models.Model):
 	hash = models.CharField(max_length=66,primary_key=True)
 	tx_from = models.ForeignKey(Address,related_name='txs_sent', on_delete=models.PROTECT, editable=False, default=None, null=True)
 	tx_to = models.ForeignKey(Address,related_name='txs_recv', on_delete=models.PROTECT, editable=False, default=None, null=True)
-	value = models.BigIntegerField(default=0)
+	nonce = models.BigIntegerField(default=0)
+	value = models.BigIntegerField("value int",default=0)
+	value_moac = models.DecimalField("value",max_digits=18,decimal_places=9,editable=False,default=Decimal(0))
 	index = models.IntegerField(default=0)
 	ledger = models.ForeignKey(Ledger, on_delete=models.CASCADE, editable=False,default=None, null=True)
 
@@ -185,6 +193,12 @@ def post_save_ledger(sender, instance, created, **kwargs):
 			statledger.save()
 
 @receiver(post_save, sender=Address)
-def post_save_ledger(sender, instance, created, **kwargs):
+def post_save_Address(sender, instance, created, **kwargs):
 	if created:
-		self.update_code()
+		instance.update_code()
+
+@receiver(pre_save, sender=Transaction)
+def pre_save_transaction(sender, instance, **kwargs):
+	if instance.value and not instance.value_moac:
+		instance.value_moac = Decimal(instance.value) / 1000000000
+

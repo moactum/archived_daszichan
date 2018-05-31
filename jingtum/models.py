@@ -7,7 +7,7 @@ from decimal import Decimal
 import datetime
 from django.dispatch import receiver
 from django.db.models.signals import pre_save, post_save
-from mptt.models import MPTTModel, TreeForeignKey
+#from mptt.models import MPTTModel, TreeForeignKey
 
 class Ledger(models.Model):
 	hash_sum = models.CharField(max_length=64,unique=True,editable=False,)
@@ -19,7 +19,7 @@ class Ledger(models.Model):
 
 class Transaction(models.Model):
 	hash_sum = models.CharField(max_length=64,unique=True,editable=False,)
-	parent = TreeForeignKey('self',null=True, blank=True, on_delete=models.SET_NULL, related_name='children', db_index=True)
+	#parent = TreeForeignKey('self',null=True, blank=True, on_delete=models.SET_NULL, related_name='children', db_index=True)
 	synced = models.BooleanField(default=False,editable=False,)
 	ledger = models.ForeignKey(Ledger, on_delete=models.PROTECT, editable=False,default=None, null=True)
 

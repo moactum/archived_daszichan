@@ -130,5 +130,5 @@ def homepage(_):
 			},
 		)
 
-	return render_to_response('index.html', {'chart_list': [ cht_ledger, cht_balance ], 'Wallets': Address.objects.filter(is_wallet=True).count(), 'Contracts': Address.objects.filter(is_contract=True).count(), 'Ledgers': Ledger.objects.count(), 'Transactions': Transaction.objects.count(), 'Uncles': Uncle.objects.count(), 'difficulty_in_tera': int(Ledger.objects.last().difficulty // 1e12), 'uncle_ratio': int(Uncle.objects.count() * 100 / Ledger.objects.count()), 'MoacMined': 2 * (Ledger.objects.count() + Uncle.objects.count()), 'QueryableMoac': int(Address.objects.aggregate(Sum('balance'))['balance__sum'])})
+	return render_to_response('index.html', {'chart_list': [ cht_ledger, cht_balance ], 'Wallets': Address.objects.exclude(is_contract=True).count(), 'Contracts': Address.objects.filter(is_contract=True).count(), 'Ledgers': Ledger.objects.count(), 'Transactions': Transaction.objects.count(), 'Uncles': Uncle.objects.count(), 'difficulty_in_tera': int(Ledger.objects.last().difficulty // 1e12), 'uncle_ratio': int(Uncle.objects.count() * 100 / Ledger.objects.count()), 'MoacMined': 2 * (Ledger.objects.count() + Uncle.objects.count()), 'QueryableMoac': int(Address.objects.aggregate(Sum('balance'))['balance__sum'])})
 

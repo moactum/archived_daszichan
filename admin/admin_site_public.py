@@ -18,9 +18,9 @@ class JsonMoacLedgerAdmin(admin.ModelAdmin):
 
 	
 class AddressAdmin(admin.ModelAdmin):
-	list_display = ('display','is_wallet','is_contract','balance','timestamp','address')
-	readonly_fields = ('address','balance', 'display','contract_code')
-	list_filter = ('is_wallet','is_contract',)
+	list_display = ('display','is_contract','balance','timestamp','address')
+	readonly_fields = ('address','balance','timestamp', 'display','code')
+	list_filter = ('is_contract',)
 	search_fields = ('=address','display')
 	ordering = ('-timestamp','-balance')
 	date_hierarchy = 'timestamp'
@@ -43,7 +43,7 @@ class UncleAdmin(admin.ModelAdmin):
 	list_display = ('ledger','number','miner','hash')
 	readonly_fields = ('number','miner','ledger','hash')
 	search_fields = ('=hash','=number','=miner__address')
-	ordering = ('-ledger__number','-number')
+	ordering = ('-ledger__id','-number')
 	date_hierarchy = 'ledger__date'
 
 	def has_change_permission(self,request,obj=None):
@@ -61,10 +61,10 @@ class UncleAdmin(admin.ModelAdmin):
 		pass
 
 class LedgerAdmin(admin.ModelAdmin):
-	list_display = ('number','num_txs','tps','duration','date','miner','hash')
-	readonly_fields = ('number','num_txs','tps','duration','date','timestamp','miner','hash','difficulty','nonce')
-	search_fields = ('=hash','=number','=miner__address')
-	ordering = ('-number',)
+	list_display = ('id','num_txs','tps','duration','date','miner','hash')
+	readonly_fields = ('id','num_txs','tps','duration','date','timestamp','miner','hash','difficulty','nonce')
+	search_fields = ('=hash','=id','=miner__address')
+	ordering = ('-id',)
 	date_hierarchy = 'date'
 
 	def has_change_permission(self,request,obj=None):
@@ -82,10 +82,10 @@ class LedgerAdmin(admin.ModelAdmin):
 		pass
 
 class TransactionAdmin(admin.ModelAdmin):
-	list_display = ('ledger','tx_from','tx_to','value','index','hash')
-	readonly_fields = ('ledger','tx_from','tx_to','value','index','hash')
-	search_fields = ('=hash','=ledger__number','=ledger__hash','=tx_from__address','=tx_to__address')
-	ordering = ('-ledger__number','-index')
+	list_display = ('ledger','tx_from','nonce','tx_to','value_moac','index','hash')
+	readonly_fields = ('ledger','tx_from','tx_to','value','nonce','value_moac','index','hash')
+	search_fields = ('=hash','=ledger__id','=ledger__hash','=tx_from__address','=tx_to__address','=tx_from__display','=tx_to__display')
+	ordering = ('-ledger__id','-index')
 	date_hierarchy = 'ledger__date'
 
 	def has_change_permission(self,request,obj=None):
