@@ -5,167 +5,174 @@
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Foundation for Sites</title>
+    <title>MOACscan</title>
     <link rel="stylesheet" href="{% get_static_prefix %}assets/css/app.css">
-    <script src="{% get_static_prefix %}assets/js/app.js"></script>
-    <script src="https://code.highcharts.com/highcharts.src.js"></script>
-    {% load chartit %}
-    {{ chart_list|load_charts:"chart,chart_balance" }}
   </head>
   <body>
-      <!-- Add a Sticky Menu -->
-      <!-- title bar
-        <div class="title-bar" data-responsive-toggle="responsive-menu" data-hide-for="medium">
-          <button class="menu-icon" type="button" data-toggle="responsive-menu"></button>
-          <div class="title-bar-title">MOACscan</div>
-        </div>
-      -->
-        <div class="top-bar" data-margin-top="0" id="responsive-menu">
-          <div class="top-bar-left">
-            <ul class="veritcal medium-horizontal menu">
-              <li><a class="button" href="/">MOACscan</a></li>
-              <li><a class="button" href="/#resource">Resource</a></li>
-              <li><a class="button" href="/#subchain">Subchains</a></li>
+    <!-- Add a Sticky Menu -->
+    <!-- title bar
+      <div class="title-bar" data-responsive-toggle="responsive-menu" data-hide-for="medium">
+        <button class="menu-icon" type="button" data-toggle="responsive-menu"></button>
+        <div class="title-bar-title">MOACscan</div>
+      </div>
+    -->
+    <div class="top-bar align-justify small-padding-0 padding-0" style="font-size:150%;" id="responsive-menu">
+      <div class="top-bar-left">
+        <ul class="dropdown menu" data-dropdown-menu>
+          <li><a href="/">MOACSCAN</a></li>
+          <li>
+            <a href="/#resoruce">RESOURCE</a>
+            <ul class="menu">
+              <li><a href="#links">Links</a></li>
+              <li><a href="#subchain">Subchain</a></li>
             </ul>
-          </div>
-          <div class="top-bar-right">
-            <ul class="veritcal medium-horizontal menu">
-              <li><a class="button" href="#Address">Addresses</a></li>
-              <li><a class="button" href="#token">Tokens</a></li>
-              <li><a class="button" href="#Block">Blocks</a></li>
-              <li><a class="button" href="#Transaction">Transactions</a></li>
+          </li>
+        </ul>
+      </div>
+      <div class="top-bar-right">
+        <ul class="dropdown menu" data-dropdown-menu>
+          <li><a href="https://live.daszichan.com" target="_new">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LIVE</a></li>
+          <li>
+            <a href="/#ledger">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LEDGER</a>
+            <ul class="menu">
+              <li><a href="#Address">Address</a></li>
+              <li><a href="#token">Token</a></li>
+              <li><a href="#Block">Block</a></li>
+              <li><a href="#Transaction">Transaction</a></li>
             </ul>
-          </div>
-        </div>
-      <!-- End Add a Sticky Menu -->
+          </li>
+        </ul>
+      </div>
+    </div>
+    <!-- End Add a Sticky Menu -->
     <div class="grid-container full">
       <div class="grid-x text-center">
         <div class="cell">
-          <h2>Statistics</h2>
+          <h3>Statistics</h3>
         </div>
       </div> 
     
       <div class="grid-x">
         <div class="large-12 cell">
           <div class="callout">
-            <div class="grid-x grid-margin-x small-up-2 medium-up-3 large-up-6">
+            <div class="grid-x grid-margin-x small-up-2 medium-up-4 large-up-4">
               <div class="cell">
                 <div class="card">
                   <div class="card-divider">
-                    <h4>Circulation</h4>
+                    <h5>Circulation</h5>
                   </div>
                   <div class="card-section">
-                    <div><h4 class="font-bold">{{ QueryableMoac|intcomma }}</h4></div>
+                    <div><h5 class="font-bold">{{ stat_ledger.data.moac_circulation|intcomma }}</h5></div>
                   </div>
                 </div>
               </div>
               <div class="cell">
                 <div class="card">
                   <div class="card-divider">
-                    <h4>MoacMined</h4>
+                    <h5>MoacMined</h5>
                   </div>
                   <div class="card-section">
-                    <div><h4 class="font-bold">{{ MoacMined|intcomma }}</h4></div>
+                    <div><h5 class="font-bold">{{ stat_ledger.data.moac_mined|intcomma }}</h5></div>
                   </div>
                 </div>
               </div>
               <div class="cell">
                 <div class="card">
                   <div class="card-divider">
-                    <h4>Ledgers</h4>
+                    <h5>Ledgers</h5>
                   </div>
                   <div class="card-section">
-                    <div><h4 class="font-bold">{{ Ledgers|intcomma }}</h4></div>
+                    <div><h5 class="font-bold">{{ stat_ledger.data.ledgers|intcomma }}</h5></div>
                   </div>
                 </div>
               </div>
               <div class="cell">
                 <div class="card">
                   <div class="card-divider">
-                    <h4>Uncles</h4>
+                    <h5>Uncles</h5>
                   </div>
                   <div class="card-section">
-                    <div><h4 class="font-bold">{{ Uncles|intcomma }}</h4></div>
+                    <div><h5 class="font-bold">{{ stat_ledger.data.uncles|intcomma }}</h5></div>
                   </div>
                 </div>
               </div>
               <div class="cell">
                 <div class="card">
                   <div class="card-divider">
-                    <h4>Transactions</h4>
+                    <h5>Transactions</h5>
                   </div>
                   <div class="card-section">
-                    <div><h4 class="font-bold">{{ Transactions|intcomma }}</h4></div>
+                    <div><h5 class="font-bold">{{ stat_ledger.data.transactions|intcomma }}</h5></div>
                   </div>
                 </div>
               </div>
               <div class="cell">
                 <div class="card">
                   <div class="card-divider">
-                    <h4>Wallets</h4>
+                    <h5>Wallets</h5>
                   </div>
                   <div class="card-section">
-                    <div><h4 class="font-bold">{{ Wallets|intcomma }}</h4></div>
+                    <div><h5 class="font-bold">{{ stat_ledger.data.wallets|intcomma }}</h5></div>
                   </div>
                 </div>
               </div>
               <div class="cell">
                 <div class="card">
                   <div class="card-divider">
-                    <h4>Contracts</h4>
+                    <h5>Contracts</h5>
                   </div>
                   <div class="card-section">
-                    <div><h4 class="font-bold">{{ Contracts|intcomma }}</h4></div>
+                    <div><h5 class="font-bold">{{ stat_ledger.data.contracts|intcomma }}</h5></div>
                   </div>
                 </div>
               </div>
               <div class="cell">
                 <div class="card">
                   <div class="card-divider">
-                    <h4>Difficulty</h4>
+                    <h5>Difficulty</h5>
                   </div>
                   <div class="card-section">
-                    <div><h4 class="font-bold">{{ difficulty_in_tera|intcomma }}</h4></div>
+                    <div><h5 class="font-bold">{{ stat_ledger.data.difficulty }} T</h5></div>
                   </div>
                 </div>
               </div>        
               <div class="cell">
                 <div class="card">
                   <div class="card-divider">
-                    <h4>Hashrate</h4>
+                    <h5>Hashrate</h5>
                   </div>
                   <div class="card-section">
-                    <div><h4 class="font-bold">&nbsp</h4></div>
+                    <div><h5 class="font-bold">{{ stat_ledger.data.hashrate }} T</h5></div>
                   </div>
                 </div>
               </div>        
               <div class="cell">
                 <div class="card">
                   <div class="card-divider">
-                    <h4>Pools</h4>
+                    <h5>BigPools</h5>
                   </div>
                   <div class="card-section">
-                    <div><h4 class="font-bold">&nbsp</h4></div>
+                    <div><h5 class="font-bold">{{ stat_ledger.data.bigpools }}</h5></div>
                   </div>
                 </div>
               </div>        
               <div class="cell">
                 <div class="card">
                   <div class="card-divider">
-                    <h4>Tokens</h4>
+                    <h5>Tokens</h5>
                   </div>
                   <div class="card-section">
-                    <div><h4 class="font-bold">&nbsp;</h4></div>
+                    <div><h5 class="font-bold">&nbsp;</h5></div>
                   </div>
                 </div>
               </div>        
               <div class="cell">
                 <div class="card">
                   <div class="card-divider">
-                    <h4>Subchains</h4>
+                    <h5>Subchains</h5>
                   </div>
                   <div class="card-section">
-                    <div><h4 class="font-bold">&nbsp;</h4></div>
+                    <div><h5 class="font-bold">&nbsp;</h5></div>
                   </div>
                 </div>
               </div>        
@@ -176,6 +183,60 @@
     
       <div class="grid-x text-center">
         <div class="cell">
+          <h2>CoinMarketCap</h2>
+        </div>
+      </div> 
+      <div class="grid-x">
+        <div class="large-12 cell">
+          <div class="callout">
+            <div class="grid-x grid-margin-x small-up-2 medium-up-4 large-up-4">
+              <div class="cell">
+                <div class="card">
+                  <div class="card-divider">
+                    <h5>Price</h5>
+                  </div>
+                  <div class="card-section">
+                    <div><h5 class="font-bold">US$ {{ stat_coinmarket.data.0.price_usd }}</h5></div>
+                  </div>
+                </div>
+              </div>
+              <div class="cell">
+                <div class="card">
+                  <div class="card-divider">
+                    <h5>Price</h5>
+                  </div>
+                  <div class="card-section">
+                    <div><h5 class="font-bold">BTC {{ stat_coinmarket.data.0.price_btc }}</h5></div>
+                  </div>
+                </div>
+              </div>
+              <div class="cell">
+                <div class="card">
+                  <div class="card-divider">
+                    <h5>Change</h5>
+                  </div>
+                  <div class="card-section">
+                    <div><h5 class="font-bold">{{ stat_coinmarket.data.0.percent_change_24h}}%</h5></div>
+                  </div>
+                </div>
+              </div>
+              <div class="cell">
+                <div class="card">
+                  <div class="card-divider">
+                    <h5>Rank</h5>
+                  </div>
+                  <div class="card-section">
+                    <div><h5 class="font-bold">{{ stat_coinmarket.data.0.rank }}</h5></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>     
+      </div>
+
+      <div class="grid-x text-center">
+        <div class="cell">
           <h2>Resources</h2>
         </div>
       </div> 
@@ -183,8 +244,8 @@
         <div class="large-12 cell">
           <div class="callout">
             <div class="grid-x grid-margin-x small-up-1 medium-up-2 large-up-2">
-              <div class="cell">abcde</div>
-              <div class="cell">12345</div>
+              <div class="cell">&nbsp;</div>
+              <div class="cell">&nbsp;</div>
             </div>
           </div>
         </div>     
@@ -216,5 +277,9 @@
       </div>
     
     </div>
+    <script src="{% get_static_prefix %}assets/js/app.js"></script>
+    <script src="https://code.highcharts.com/highcharts.src.js"></script>
+    {% load chartit %}
+    {{ chart_list|load_charts:"chart,chart_balance" }}
   </body>
 </html>

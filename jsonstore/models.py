@@ -4,16 +4,50 @@ from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import pre_save, post_save
 from django.contrib.postgres.fields import JSONField
+from django.utils import timezone
+from django.db.models import Sum, Count, Max, Min
 #from mptt.models import MPTTModel, TreeForeignKey
 from urllib import error, request
 import sys, random, time, json
 from decimal import Decimal
 from moac.models import Ledger, Address, Transaction, Uncle
 
-#class JsonStat(models.Model):
-#	metric = models.CharField(max_length=16,unique=True)
-#	data = JSONField()
-#	date = models.DateField(auto_now=True)
+#hashrate_tera = pow(2,40)
+hashrate_tera = 1e12
+hashrate_average_sample = 10
+coinmarket_update_minimum = 60
+class JsonStat(models.Model):
+	metric = models.CharField(max_length=16,unique=True)
+	data = JSONField(default={})
+	timestamp = models.DateTimeField(auto_now=True)
+
+	def __str__(self):
+		return self.metric
+
+	def update(self):
+		if self.metric == 'coinmarket':
+			if (timezone.now() - self.timestamp).seconds > coinmarket_update_minimum:
+				r = request.urlopen('https://api.coinmarketcap.com/v1/ticker/moac/',timeout=20)
+				if r.status == 200:
+					data = json.loads(r.read())
+					data[0]['price_btc'] = int( float(data[0]['price_btc']) * 1000000 ) / 1000000
+					self.data = data 
+					self.save()
+		elif self.metric == 'ledger':
+			self.data['ledgers'] = Ledger.objects.count()
+			self.data['uncles'] = Uncle.objects.count()
+			self.data['moac_mined'] = 2 * (self.data['ledgers'] + self.data['uncles'])
+			self.data['moac_circulation'] = int(Address.objects.aggregate(Sum('balance'))['balance__sum'])
+			self.data['uncle_ratio'] = int(100 * self.data['uncles'] / self.data['ledgers'])
+			self.data['wallets'] = Address.objects.filter(is_contract=False).count()
+			self.data['contracts'] = Address.objects.filter(is_contract=True).count()
+			self.data['transactions'] = Transaction.objects.count()
+			self.data['difficulty'] = 10 * Ledger.objects.get(id=self.data['ledgers'] - 1).difficulty // hashrate_tera / 10
+			self.data['bigpools'] = Address.objects.annotate(Count('ledger')).filter(ledger__count__gt=10000).count()
+			self.data['hashrate'] = 10 * Ledger.objects.filter(id__gte=self.data['ledgers'] - hashrate_average_sample).filter(id__lt=self.data['ledgers']).aggregate(Sum('difficulty'))['difficulty__sum'] // hashrate_tera // (Ledger.objects.get(id=self.data['ledgers'] - 1).timestamp - Ledger.objects.get(id=self.data['ledgers'] - hashrate_average_sample - 1).timestamp) / 10
+			self.save()
+		else:
+			pass
 
 class JsonJingtumLedger(models.Model):
 	hash = models.CharField(max_length=64,unique=True,editable=False)
@@ -100,6 +134,7 @@ class JsonMoacLedger(models.Model):
 
 	def proc_ledger(self,do_uncle=False, bypass_balance=False):
 		addresses = set()
+		ledger_new = False
 		try:
 			ledger = Ledger.objects.get(hash=self.hash)
 			if do_uncle:
@@ -120,6 +155,7 @@ class JsonMoacLedger(models.Model):
 				ledger = Ledger(hash=self.hash, id=self.id, difficulty = self.data['difficulty'], nonce = self.data['nonce'], miner=miner, timestamp=timestamp)
 				ledger.save()
 			else:
+				ledger_new = True
 				duration = int(timestamp - Ledger.objects.get(id=self.id -1).timestamp)
 				num_txs = len(self.data['transactions'])
 				tps = int(num_txs / duration)
@@ -154,6 +190,9 @@ class JsonMoacLedger(models.Model):
 					sys.stdout.write("%s, " % a.display)
 					a.update_balance()
 				sys.stdout.write('\n')
+			if ledger_new:
+				JsonStat.objects.get(metric='ledger').update()
+				JsonStat.objects.get(metric='coinmarket').update()
 			
 	@classmethod
 	def verify(cls,start=0):
