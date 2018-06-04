@@ -66,7 +66,7 @@ class JsonMoacLedger(models.Model):
 		return "%s: %s" % (self.id, self.hash)
 
 	def delete(self):
-		for l in Ledger.objects.filter(number=self.id):
+		for l in Ledger.objects.filter(id=self.id):
 			l.delete()
 		super(JsonMoacLedger,self).delete()
 
