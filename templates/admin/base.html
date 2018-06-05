@@ -31,11 +31,14 @@
         {% block usertools %}
         {% if has_permission %}
         <div id="user-tools">
+			<!--
             {% block welcome-msg %}
                 {% trans 'Welcome,' %}
                 <strong>{% firstof user.get_short_name user.get_username %}</strong>.
             {% endblock %}
+			-->
             {% block userlinks %}
+				<!--
                 {% if site_url %}
                     <a href="{{ site_url }}">{% trans 'View site' %}</a> /
                 {% endif %}
@@ -49,6 +52,11 @@
                 <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a> /
                 {% endif %}
                 <a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+				-->
+                <a href="{% url 'public:moac_address_changelist' %}?is_contract__exact=0">Wallets&nbsp;&nbsp;</a>
+                <a href="{% url 'public:moac_ledger_changelist' %}"> Blocks&nbsp;&nbsp; </a>
+                <a href="{% url 'public:moac_transaction_changelist' %}"> Transactions&nbsp;&nbsp; </a>
+                <a href="{% url 'public:moac_address_changelist' %}?is_contract__exact=1"> Apps</a>
             {% endblock %}
         </div>
         {% endif %}
@@ -68,8 +76,10 @@
 
     <!-- Content -->
     <div id="content" class="{% block coltype %}colM{% endblock %}">
+		<!--
         {% block pretitle %}{% endblock %}
         {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
+		-->
         {% block content %}
         {% block object-tools %}{% endblock %}
         {{ content }}

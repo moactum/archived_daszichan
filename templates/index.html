@@ -10,6 +10,7 @@
     <meta name="keywords" content="MOAC, Sharding, Smart Contract, SubChain, MicroChain, explorer, JingtumTech, blockchain, crypto, currency, 墨客, 分层, 智能合约, 子链, 众链之母, 井通科技, 井底望天, 大国游戏" />
     <title>MOACscan</title>
     <link rel="stylesheet" href="{% get_static_prefix %}css/foundation.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
     <link rel="stylesheet" href="{% get_static_prefix %}css/app20180605.css">
   </head>
   <body>
@@ -42,7 +43,7 @@
         <ul class="menu vertical medium-horizontal">
           <li><a href="{% url 'public:moac_ledger_changelist' %}">Blocks</a></li>
           <li><a href="{% url 'public:moac_transaction_changelist' %}">Transactions</a></li>
-          <li><a href="{% url 'public:moac_address_changelist' %}?is_contract__exact=1">Contracts</a></li>
+          <li><a href="{% url 'public:moac_address_changelist' %}?is_contract__exact=1">Apps</a></li>
         </ul>
       </div>
     </div>
@@ -253,7 +254,7 @@
               <div class="cell">
                 <div class="card">
                   <div class="card-divider">
-                    <h5>Website - en</h5>
+                    <h5><i class="fa fa-link"></i> English</h5>
                   </div>
                   <div class="card-section">
                     <div><h5 class="font-bold"><a href="https://moac.io" target="_new">moac.io</a></h5></div>
@@ -263,7 +264,7 @@
               <div class="cell">
                 <div class="card">
                   <div class="card-divider">
-                    <h5>Website - zh</h5>
+                    <h5><i class="fa fa-link"></i> 中文</h5>
                   </div>
                   <div class="card-section">
                     <div><h5 class="font-bold"><a href="http://moacchina.com" target="_new">moacchina.com</a></h5></div>
@@ -273,7 +274,7 @@
               <div class="cell">
                 <div class="card">
                   <div class="card-divider">
-                    <h5>Github</h5>
+                    <h5><i class="fa fa-github"></i> English</h5>
                   </div>
                   <div class="card-section">
                     <div><h5 class="font-bold"><a href="https://github.com/MOACChain/moac-core" target="_new">MOACChain/moac-core</a></h5></div>
@@ -283,7 +284,7 @@
               <div class="cell">
                 <div class="card">
                   <div class="card-divider">
-                    <h5>Twitter</h5>
+                    <h5><i class="fa fa-twitter"></i> English</h5>
                   </div>
                   <div class="card-section">
                     <div><h5 class="font-bold"><a href="https://twitter.com/moac_io" target="_new">moac_io</a></h5></div>
@@ -293,7 +294,7 @@
               <div class="cell">
                 <div class="card">
                   <div class="card-divider">
-                    <h5>Linkedin</h5>
+                    <h5><i class="fa fa-linkedin"></i> English</h5>
                   </div>
                   <div class="card-section">
                     <div><h5 class="font-bold"><a href="https://www.linkedin.com/company/moac-chain/" target="_new">moac-chain</a></h5></div>
@@ -303,7 +304,7 @@
               <div class="cell">
                 <div class="card">
                   <div class="card-divider">
-                    <h5>Reddit</h5>
+                    <h5><i class="fa fa-reddit"></i> English</h5>
                   </div>
                   <div class="card-section">
                     <div><h5 class="font-bold"><a href="https://www.reddit.com/r/MOAC/" target="_new">MOAC</a></h5></div>
@@ -313,7 +314,7 @@
               <div class="cell">
                 <div class="card">
                   <div class="card-divider">
-                    <h5>Telegram - en</h5>
+                    <h5><i class="fa fa-telegram"></i> English</h5>
                   </div>
                   <div class="card-section">
                     <div><h5 class="font-bold"><a href="https://t.me/moacblockchain" target="_new">moacblockchain</a></h5></div>
@@ -323,7 +324,7 @@
               <div class="cell">
                 <div class="card">
                   <div class="card-divider">
-                    <h5>Telegram - zh</h5>
+                    <h5><i class="fa fa-telegram"></i> 中文</h5>
                   </div>
                   <div class="card-section">
                     <div><h5 class="font-bold"><a href="https://t.me/moachina" target="_new">moacchina</a></h5></div>
