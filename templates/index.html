@@ -13,40 +13,43 @@
     <link rel="stylesheet" href="{% get_static_prefix %}css/app20180605.css">
   </head>
   <body>
-    <!-- Add a Sticky Menu -->
-    <div class="title-bar" data-responsive-toggle="responsive-menu" data-hide-for="medium">
-      <button class="menu-icon" type="button" data-toggle="responsive-menu"></button>
-      <div class="title-bar-title">MOACscan</div>
+   <div class="top-bar-container" data-sticky-container>
+   <div class="sticky sticky-topbar" data-sticky data-options="anchor: page; marginTop: 0; stickyOn: small;">
+    <!-- mobile nav bar -->
+    <div class="title-bar topbar-center-logo-mobile" data-responsive-toggle="topbar-center-logo" data-hide-for="medium">
+      <div class="title-bar-left">
+        <div class="title-bar-title"><img src="{% get_static_prefix %}images/moac_logo.png" alt="MOACSCAN" /></div>
+      </div>
+      <div class="title-bar-right">
+        <button class="menu-icon" type="button" data-toggle="topbar-center-logo"></button>
+      </div>
     </div>
-    <div class="top-bar align-justify  padding-0" data-options="marginTop:0;" style="font-size:125%;" id="responsive-menu">
+    <!-- /mobile nav bar -->
+    
+    <!-- medium and larger nav bar -->
+    <div class="top-bar topbar-center-logo text-bold" id="topbar-center-logo">
       <div class="top-bar-left">
-        <ul class="dropdown menu" data-dropdown-menu>
-          <li><a href="/">MOACSCAN</a></li>
-          <li>
-            <a href="/#resoruce">RESOURCE</a>
-            <ul class="menu">
-              <li><a href="#links">Links</a></li>
-              <li><a href="#subchain">Subchain</a></li>
-            </ul>
-          </li>
+        <ul class="menu vertical medium-horizontal">
+          <li><a href="/#Resources">Resources</a></li>
+          <li><a href="/#Market">CoinMarket</a></li>
+          <li><a href="{% url 'public:moac_address_changelist' %}?is_contract__exact=0">Wallets</a></li>
         </ul>
+      </div>
+      <div class="top-bar-center">
+        <a href="/#Statistics"><img src="{% get_static_prefix %}images/moac_logo.png" alt="MOACSCAN" /></a>
       </div>
       <div class="top-bar-right">
-        <ul class="dropdown menu" data-dropdown-menu>
-          <li><a href="https://live.daszichan.com" target="_new">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LIVE</a></li>
-          <li>
-            <a href="/#ledger">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LEDGER</a>
-            <ul class="menu">
-              <li><a href="#Address">Address</a></li>
-              <li><a href="#token">Token</a></li>
-              <li><a href="#Block">Block</a></li>
-              <li><a href="#Transaction">Transaction</a></li>
-            </ul>
-          </li>
+        <ul class="menu vertical medium-horizontal">
+          <li><a href="{% url 'public:moac_ledger_changelist' %}">Blocks</a></li>
+          <li><a href="{% url 'public:moac_transaction_changelist' %}">Transactions</a></li>
+          <li><a href="{% url 'public:moac_address_changelist' %}?is_contract__exact=1">Contracts</a></li>
         </ul>
       </div>
     </div>
-    <!-- End Add a Sticky Menu -->
+    <!-- /medium and larger nav bar -->
+   </div>
+  </div>
+    <a name="Statistics"></a>
     <div class="grid-container full">
       <div class="grid-x text-center">
         <div class="cell">
@@ -182,7 +185,7 @@
           </div>
         </div>
       </div>
-    
+      <a name="Market"></a>
       <div class="grid-x text-center">
         <div class="cell">
           <h3>CoinMarketCap ( {{ stat_coinmarket.timestamp|naturaltime}} )</h3>
@@ -237,6 +240,7 @@
         </div>     
       </div>
 
+      <a name="Resources"></a>
       <div class="grid-x text-center">
         <div class="cell">
           <h2>Resources</h2>
