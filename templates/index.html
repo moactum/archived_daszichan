@@ -5,18 +5,20 @@
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="Description" content="Etherscan allows you to explore and search the Ethereum blockchain for transactions, addresses, tokens, prices and other activities taking place on Ethereum (ETH)" />
+    <meta name="author" content="daszichan.com" />
+    <meta name="keywords" content="MOAC, Sharding, Smart Contract, SubChain, MicroChain, explorer, JingtumTech, blockchain, crypto, currency, 墨客, 分层, 智能合约, 子链, 众链之母, 井通科技, 井底望天, 大国游戏" />
     <title>MOACscan</title>
-    <link rel="stylesheet" href="{% get_static_prefix %}assets/css/app.css">
+    <link rel="stylesheet" href="{% get_static_prefix %}css/foundation.css">
+    <link rel="stylesheet" href="{% get_static_prefix %}css/app20180605.css">
   </head>
   <body>
     <!-- Add a Sticky Menu -->
-    <!-- title bar
-      <div class="title-bar" data-responsive-toggle="responsive-menu" data-hide-for="medium">
-        <button class="menu-icon" type="button" data-toggle="responsive-menu"></button>
-        <div class="title-bar-title">MOACscan</div>
-      </div>
-    -->
-    <div class="top-bar align-justify small-padding-0 padding-0" style="font-size:150%;" id="responsive-menu">
+    <div class="title-bar" data-responsive-toggle="responsive-menu" data-hide-for="medium">
+      <button class="menu-icon" type="button" data-toggle="responsive-menu"></button>
+      <div class="title-bar-title">MOACscan</div>
+    </div>
+    <div class="top-bar align-justify  padding-0" data-options="marginTop:0;" style="font-size:125%;" id="responsive-menu">
       <div class="top-bar-left">
         <ul class="dropdown menu" data-dropdown-menu>
           <li><a href="/">MOACSCAN</a></li>
@@ -48,7 +50,7 @@
     <div class="grid-container full">
       <div class="grid-x text-center">
         <div class="cell">
-          <h3>Statistics</h3>
+          <h3>Statistics ( {{ stat_ledger.timestamp|naturaltime }} )</h3>
         </div>
       </div> 
     
@@ -79,7 +81,7 @@
               <div class="cell">
                 <div class="card">
                   <div class="card-divider">
-                    <h5>Ledgers</h5>
+                    <h5><a href="{% url 'public:moac_ledger_changelist' %}">Ledgers</a></h5>
                   </div>
                   <div class="card-section">
                     <div><h5 class="font-bold">{{ stat_ledger.data.ledgers|intcomma }}</h5></div>
@@ -89,7 +91,7 @@
               <div class="cell">
                 <div class="card">
                   <div class="card-divider">
-                    <h5>Uncles</h5>
+                    <h5><a href="{% url 'public:moac_uncle_changelist' %}">Uncles</a></h5>
                   </div>
                   <div class="card-section">
                     <div><h5 class="font-bold">{{ stat_ledger.data.uncles|intcomma }}</h5></div>
@@ -99,7 +101,7 @@
               <div class="cell">
                 <div class="card">
                   <div class="card-divider">
-                    <h5>Transactions</h5>
+                    <h5><a href="{% url 'public:moac_transaction_changelist' %}">Transactions</a></h5>
                   </div>
                   <div class="card-section">
                     <div><h5 class="font-bold">{{ stat_ledger.data.transactions|intcomma }}</h5></div>
@@ -109,7 +111,7 @@
               <div class="cell">
                 <div class="card">
                   <div class="card-divider">
-                    <h5>Wallets</h5>
+                    <h5><a href="{% url 'public:moac_address_changelist' %}?is_contract__exact=0">Wallets</a></h5>
                   </div>
                   <div class="card-section">
                     <div><h5 class="font-bold">{{ stat_ledger.data.wallets|intcomma }}</h5></div>
@@ -119,7 +121,7 @@
               <div class="cell">
                 <div class="card">
                   <div class="card-divider">
-                    <h5>Contracts</h5>
+                    <h5><a href="{% url 'public:moac_address_changelist' %}?is_contract__exact=1">Contracs</a></h5>
                   </div>
                   <div class="card-section">
                     <div><h5 class="font-bold">{{ stat_ledger.data.contracts|intcomma }}</h5></div>
@@ -129,7 +131,7 @@
               <div class="cell">
                 <div class="card">
                   <div class="card-divider">
-                    <h5>Difficulty</h5>
+                    <h5><a href="{% url 'public:moac_ledger_change' stat_ledger.data.ledgers|add:"-1" %}?is_contract__exact=1">Difficulty</a></h5>
                   </div>
                   <div class="card-section">
                     <div><h5 class="font-bold">{{ stat_ledger.data.difficulty }} T</h5></div>
@@ -183,7 +185,7 @@
     
       <div class="grid-x text-center">
         <div class="cell">
-          <h2>CoinMarketCap</h2>
+          <h3>CoinMarketCap ( {{ stat_coinmarket.timestamp|naturaltime}} )</h3>
         </div>
       </div> 
       <div class="grid-x">
@@ -243,9 +245,87 @@
       <div class="grid-x">
         <div class="large-12 cell">
           <div class="callout">
-            <div class="grid-x grid-margin-x small-up-1 medium-up-2 large-up-2">
-              <div class="cell">&nbsp;</div>
-              <div class="cell">&nbsp;</div>
+            <div class="grid-x grid-margin-x small-up-2 medium-up-4 large-up-4">
+              <div class="cell">
+                <div class="card">
+                  <div class="card-divider">
+                    <h5>Website - en</h5>
+                  </div>
+                  <div class="card-section">
+                    <div><h5 class="font-bold"><a href="https://moac.io" target="_new">moac.io</a></h5></div>
+                  </div>
+                </div>
+              </div>
+              <div class="cell">
+                <div class="card">
+                  <div class="card-divider">
+                    <h5>Website - zh</h5>
+                  </div>
+                  <div class="card-section">
+                    <div><h5 class="font-bold"><a href="http://moacchina.com" target="_new">moacchina.com</a></h5></div>
+                  </div>
+                </div>
+              </div>
+              <div class="cell">
+                <div class="card">
+                  <div class="card-divider">
+                    <h5>Github</h5>
+                  </div>
+                  <div class="card-section">
+                    <div><h5 class="font-bold"><a href="https://github.com/MOACChain/moac-core" target="_new">MOACChain/moac-core</a></h5></div>
+                  </div>
+                </div>
+              </div>
+              <div class="cell">
+                <div class="card">
+                  <div class="card-divider">
+                    <h5>Twitter</h5>
+                  </div>
+                  <div class="card-section">
+                    <div><h5 class="font-bold"><a href="https://twitter.com/moac_io" target="_new">moac_io</a></h5></div>
+                  </div>
+                </div>
+              </div>
+              <div class="cell">
+                <div class="card">
+                  <div class="card-divider">
+                    <h5>Linkedin</h5>
+                  </div>
+                  <div class="card-section">
+                    <div><h5 class="font-bold"><a href="https://www.linkedin.com/company/moac-chain/" target="_new">moac-chain</a></h5></div>
+                  </div>
+                </div>
+              </div>
+              <div class="cell">
+                <div class="card">
+                  <div class="card-divider">
+                    <h5>Reddit</h5>
+                  </div>
+                  <div class="card-section">
+                    <div><h5 class="font-bold"><a href="https://www.reddit.com/r/MOAC/" target="_new">MOAC</a></h5></div>
+                  </div>
+                </div>
+              </div>
+              <div class="cell">
+                <div class="card">
+                  <div class="card-divider">
+                    <h5>Telegram - en</h5>
+                  </div>
+                  <div class="card-section">
+                    <div><h5 class="font-bold"><a href="https://t.me/moacblockchain" target="_new">moacblockchain</a></h5></div>
+                  </div>
+                </div>
+              </div>
+              <div class="cell">
+                <div class="card">
+                  <div class="card-divider">
+                    <h5>Telegram - zh</h5>
+                  </div>
+                  <div class="card-section">
+                    <div><h5 class="font-bold"><a href="https://t.me/moachina" target="_new">moacchina</a></h5></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>     
@@ -266,18 +346,16 @@
               <div class="cell">
                 <div id="chart"></div>
               </div>
-              <div class="cell">
-                <div id="google">
-                  <script type="text/javascript" src="https://ssl.gstatic.com/trends_nrtr/1420_RC05/embed_loader.js"></script> <script type="text/javascript"> trends.embed.renderExploreWidget("TIMESERIES", {"comparisonItem":[{"keyword":"MOAC","geo":"","time":"today 12-m"},{"keyword":"墨客","geo":"","time":"today 12-m"}],"category":0,"property":""}, {"exploreQuery":"q=MOAC,%E5%A2%A8%E5%AE%A2&date=today 12-m,today 12-m","guestPath":"https://trends.google.com:443/trends/embed/"}); </script>
-                </div>
-              </div>
             </div>
           </div>
         </div>     
       </div>
-    
     </div>
-    <script src="{% get_static_prefix %}assets/js/app.js"></script>
+
+    <script src="{% get_static_prefix %}js/vendor/jquery.js"></script>
+    <script src="{% get_static_prefix %}js/vendor/what-input.js"></script>
+    <script src="{% get_static_prefix %}js/vendor/foundation.js"></script>
+    <script src="{% get_static_prefix %}js/app20180605.js"></script>
     <script src="https://code.highcharts.com/highcharts.src.js"></script>
     {% load chartit %}
     {{ chart_list|load_charts:"chart,chart_balance" }}

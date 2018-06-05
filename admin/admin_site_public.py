@@ -18,7 +18,7 @@ class JsonMoacLedgerAdmin(admin.ModelAdmin):
 
 	
 class AddressAdmin(admin.ModelAdmin):
-	list_display = ('display','is_contract','balance','timestamp','address')
+	list_display = ('display','balance','is_contract','timestamp','address')
 	readonly_fields = ('address','balance','timestamp', 'display','code')
 	list_filter = ('is_contract',)
 	search_fields = ('=address','display')
