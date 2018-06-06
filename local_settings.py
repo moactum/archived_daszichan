@@ -127,4 +127,4 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
 DATA_UPLOAD_MAX_MEMORY_SIZE = 26214400
 LOGIN_URL='/api/auth/login/'
 #DATABASE_ROUTERS = ['dbrouter.dbrouters.DbPostgresqlRouter',]
-DEBUG = True
+DEBUG = False
