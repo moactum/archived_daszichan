@@ -191,8 +191,10 @@ class JsonMoacLedger(models.Model):
 					a.update_balance()
 				sys.stdout.write('\n')
 			if ledger_new:
-				JsonStat.objects.get(metric='ledger').update()
-				JsonStat.objects.get(metric='coinmarket').update()
+				jsl,created = JsonStat.objects.get_or_create(metric='ledger')
+				jsl.update()
+				jsc,created = JsonStat.objects.get_or_create(metric='coinmarket')
+				jsc.update()
 			
 	@classmethod
 	def verify(cls,start=0):
