@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from django.db import models
+from common.models import *
 import re, sys, subprocess, pprint, json
 from decimal import Decimal
 import datetime
@@ -10,7 +11,7 @@ from django.db.models.signals import pre_save, post_save
 from django.utils import timezone
 from urllib import request
 
-class Address(models.Model):
+class Address(TimeStampedModel):
 	address = models.CharField(max_length=43,unique=True)
 	display = models.CharField(max_length=24,default='')
 	is_contract = models.BooleanField(default=False,editable=False)

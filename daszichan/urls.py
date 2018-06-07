@@ -19,7 +19,7 @@ from rest_framework import routers, serializers, viewsets
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework import permissions
 from django.urls import include, path, re_path
-from admin.admin_site import my_admin_site
+#from admin.admin_site import my_admin_site
 from admin.admin_site_public import my_admin_site_public
 from rest_framework_simplejwt.views import (
 	TokenObtainPairView,

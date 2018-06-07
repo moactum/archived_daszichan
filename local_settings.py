@@ -14,6 +14,8 @@ INSTALLED_APPS += [
 	'corsheaders',
 	'rest_framework',
 	'whitenoise',
+	'common',
+	'profile.apps.ProfileConfig',
 	'jsonstore',
 	'jingtum',
 	'moac',
