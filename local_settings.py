@@ -130,3 +130,4 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 26214400
 LOGIN_URL='/api/auth/login/'
 #DATABASE_ROUTERS = ['dbrouter.dbrouters.DbPostgresqlRouter',]
 DEBUG = False
+API_CHAIN3 = 'http://localhost:3003/api'

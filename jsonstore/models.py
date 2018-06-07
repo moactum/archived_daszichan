@@ -10,6 +10,7 @@ from django.db.models import Sum, Count, Max, Min
 from urllib import error, request
 import sys, random, time, json
 from decimal import Decimal
+import common
 from moac.models import Ledger, Address, Transaction, Uncle
 
 #hashrate_tera = pow(2,40)
@@ -27,12 +28,15 @@ class JsonStat(models.Model):
 	def update(self):
 		if self.metric == 'coinmarket':
 			if (timezone.now() - self.timestamp).seconds > coinmarket_update_minimum:
-				r = request.urlopen('https://api.coinmarketcap.com/v1/ticker/moac/',timeout=20)
-				if r.status == 200:
-					data = json.loads(r.read())
-					data[0]['price_btc'] = int( float(data[0]['price_btc']) * 1000000 ) / 1000000
-					self.data = data 
-					self.save()
+				try:
+					r = common.WebAPI.get('ticker/moac/', url='https://api.coinmarketcap.com/v1/',timeout=20)
+					if r.status == 200:
+						data = json.loads(r.read())
+						data[0]['price_btc'] = int( float(data[0]['price_btc']) * 1000000 ) / 1000000
+						self.data = data
+						self.save()
+				except Exception as e:
+					print(e)
 		elif self.metric == 'ledger':
 			self.data['ledgers'] = Ledger.objects.count()
 			self.data['uncles'] = Uncle.objects.count()
@@ -104,16 +108,14 @@ class JsonMoacLedger(models.Model):
 			l.delete()
 		super(JsonMoacLedger,self).delete()
 
-	def sync_uncles(self,url=''):
+	def sync_uncles(self):
 		if self.synced:
 			return True
-		if not url:
-			url = "http://localhost:3003/api/uncle/"
 		if self.data['uncles']:
 			for index in range(len(self.data['uncles'])):
 				sys.stdout.write("\t...trying %s/%s\n" % (self.id,index))
 				try:
-					response = request.urlopen("%s%s/%s" % (url,self.id,index), timeout=30)
+					response = common.WebAPI.get("uncle/{0}/{1}".format(self.id,index))
 					if response.status == 200:
 						result = json.loads(response.read().decode())
 						hash = result['hash']
@@ -216,9 +218,7 @@ class JsonMoacLedger(models.Model):
 		return True
 
 	@classmethod
-	def sync(cls,height,url=''):
-		if not url:
-			url = "http://localhost:3003/api/block/%s" % height
+	def sync(cls,height):
 		done = False
 		last = None
 		ledger = None
@@ -237,7 +237,7 @@ class JsonMoacLedger(models.Model):
 			pass
 		while not done:
 			try:
-				response = request.urlopen(url,timeout=30)
+				response = common.WebAPI.get("block/{0}".format(height))
 				if response.status == 200:
 					result = json.loads(response.read().decode())
 					hash = result['hash']
