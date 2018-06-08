@@ -13,7 +13,7 @@ INSTALLED_APPS += [
 	'mptt',
 	'corsheaders',
 	'rest_framework',
-	'whitenoise',
+	#'whitenoise',
 	'common',
 	'profile.apps.ProfileConfig',
 	'jsonstore',
@@ -67,11 +67,11 @@ DATABASES = {
 #LOGIN_REDIRECT_URL = "/task.jsp/"
 #LOGIN_URL = "/accounts/login/"
 #LOGOUT_URL = "/accounts/logout/"
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+#STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
-#STATICFILES_DIRS = (
-#	os.path.join(BASE_DIR, 'static'),
-#	)
+STATICFILES_DIRS = (
+	os.path.join(BASE_DIR, 'static'),
+	)
 
 SIMPLE_JWT = {
 	'ACCESS_TOKEN_LIFETIME': timedelta(days=3),
@@ -109,7 +109,7 @@ REST_FRAMEWORK = {
 	#'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
 	#'PAGE_SIZE': 100
 }
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+#STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 #CORS_ORIGIN_ALLOW_ALL = True
 #CORS_ORIGIN_WHITELIST = (
 #	'localhost',

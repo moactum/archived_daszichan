@@ -21,6 +21,8 @@ from rest_framework import permissions
 from django.urls import include, path, re_path
 #from admin.admin_site import my_admin_site
 from admin.admin_site_public import my_admin_site_public
+from django.conf.urls.i18n import i18n_patterns
+
 from rest_framework_simplejwt.views import (
 	TokenObtainPairView,
 	TokenVerifyView,

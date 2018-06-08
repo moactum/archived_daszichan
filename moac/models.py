@@ -10,12 +10,12 @@ from django.db.models.signals import pre_save, post_save
 #from mptt.models import MPTTModel, TreeForeignKey
 from django.utils import timezone
 from urllib import request
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 
 class Address(TimeStampedModel):
 	address = models.CharField(max_length=43,unique=True)
 	display = models.CharField(max_length=24,default='')
-	is_contract = models.BooleanField(default=False,editable=False)
+	is_contract = models.BooleanField(_("contract?"),default=False,editable=False)
 	code = models.TextField(default='',editable=False)
 	balance = models.DecimalField(max_digits=18,decimal_places=9,editable=False,default=Decimal(0))
 	timestamp = models.DateTimeField(blank=True,null=True,default=None,editable=False)

@@ -5,6 +5,7 @@ from django.contrib.admin.actions import delete_selected
 from decimal import Decimal
 import csv
 from django.http import HttpResponse
+from django.utils.translation import gettext as _
 
 # Register your models here.
 class JsonMoacLedgerAdmin(admin.ModelAdmin):
@@ -42,7 +43,7 @@ class AddressAdmin(admin.ModelAdmin):
 class UncleAdmin(admin.ModelAdmin):
 	list_display = ('ledger','number','miner','hash')
 	readonly_fields = ('number','miner','ledger','hash')
-	search_fields = ('=hash','=number','=miner__address')
+	search_fields = ('=hash','=number','miner__address')
 	ordering = ('-ledger__id','-number')
 	date_hierarchy = 'ledger__date'
 
@@ -63,7 +64,7 @@ class UncleAdmin(admin.ModelAdmin):
 class LedgerAdmin(admin.ModelAdmin):
 	list_display = ('id','num_txs','tps','duration','date','miner','hash')
 	readonly_fields = ('id','num_txs','tps','duration','date','timestamp','miner','hash','difficulty','nonce')
-	search_fields = ('=hash','=id','=miner__address')
+	search_fields = ('=hash','=id','miner__address')
 	ordering = ('-id',)
 	date_hierarchy = 'date'
 
@@ -84,7 +85,7 @@ class LedgerAdmin(admin.ModelAdmin):
 class TransactionAdmin(admin.ModelAdmin):
 	list_display = ('ledger','tx_from','nonce','tx_to','value_moac','index','hash')
 	readonly_fields = ('ledger','tx_from','tx_to','value','nonce','value_moac','index','hash')
-	search_fields = ('=hash','=ledger__id','=ledger__hash','=tx_from__address','=tx_to__address','=tx_from__display','=tx_to__display')
+	search_fields = ('=hash','=ledger__id','=ledger__hash','tx_from__address','tx_to__address','tx_from__display','tx_to__display')
 	ordering = ('-ledger__id','-index')
 	date_hierarchy = 'ledger__date'
 
@@ -100,9 +101,9 @@ class TransactionAdmin(admin.ModelAdmin):
 		pass
 
 class AdminSite(admin.sites.AdminSite):
-	site_header = 'MOACscan'
-	site_title  = 'MOACscan'
-	index_title = 'MOACscan'
+	site_header = _('MOACscan')
+	site_title  = _('MOACscan')
+	index_title = _('MOACscan')
 
 	def has_permission(self,request):
 		return True
