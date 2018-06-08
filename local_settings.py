@@ -110,8 +110,6 @@ REST_FRAMEWORK = {
 	#'PAGE_SIZE': 100
 }
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-TIMEZONE = 'America/Toronto'
-USE_TZ =  True
 #CORS_ORIGIN_ALLOW_ALL = True
 #CORS_ORIGIN_WHITELIST = (
 #	'localhost',

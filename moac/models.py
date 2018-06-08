@@ -10,6 +10,7 @@ from django.db.models.signals import pre_save, post_save
 #from mptt.models import MPTTModel, TreeForeignKey
 from django.utils import timezone
 from urllib import request
+from django.utils.translation import gettext_lazy as _
 
 class Address(TimeStampedModel):
 	address = models.CharField(max_length=43,unique=True)
@@ -27,6 +28,8 @@ class Address(TimeStampedModel):
 
 	class Meta:
 		ordering = ('address', )
+		verbose_name = _('address')
+		verbose_name_plural = _('addresses')
 
 	def __str__(self):
 		return self.display
@@ -110,10 +113,12 @@ class Ledger(models.Model):
 	nonce = models.CharField(max_length=20,default='')
 	timestamp = models.IntegerField(default=0)
 	date = models.DateField(editable=False,null=True,default=None)
-	miner = models.ForeignKey(Address, on_delete=models.PROTECT, editable=False,default=None, null=True)
+	miner = models.ForeignKey(Address, on_delete=models.PROTECT, editable=False,default=None, null=True, verbose_name=_('minerpool'))
 
 	class Meta:
 		ordering = ('id',)
+		verbose_name = _('ledger')
+		verbose_name_plural = _('ledgers')
 
 	def __str__(self):
 		return str(self.id)
@@ -162,8 +167,8 @@ class StatLedger(models.Model):
 
 class Transaction(models.Model):
 	hash = models.CharField(max_length=66,primary_key=True)
-	tx_from = models.ForeignKey(Address,related_name='txs_sent', on_delete=models.PROTECT, editable=False, default=None, null=True)
-	tx_to = models.ForeignKey(Address,related_name='txs_recv', on_delete=models.PROTECT, editable=False, default=None, null=True)
+	tx_from = models.ForeignKey(Address,related_name='tx_from', on_delete=models.PROTECT, editable=False, default=None, null=True)
+	tx_to = models.ForeignKey(Address,related_name='tx_to', on_delete=models.PROTECT, editable=False, default=None, null=True)
 	nonce = models.BigIntegerField(default=0)
 	value = models.BigIntegerField("value int",default=0)
 	value_moac = models.DecimalField("value",max_digits=18,decimal_places=9,editable=False,default=Decimal(0))
