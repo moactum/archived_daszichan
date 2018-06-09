@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html {% block htmlattrs %}{% endblock %}>
+  <head>
+  {% block head %}
+  {% endblock %}
+  </head>
+
+  <body {% block bodyattrs %}{% endblock %}>
+  {% block body %}
+    {% block header %}
+    {% endblock %}
+
+    {% block main %}
+    {% endblock %}
+
+    {% block footer %}
+    {% endblock %}
+
+    {% block extra %}
+    {% endblock %}
+  {% endblock %}
+  </body>
+</html>
