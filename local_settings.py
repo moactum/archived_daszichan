@@ -67,11 +67,11 @@ DATABASES = {
 #LOGIN_REDIRECT_URL = "/task.jsp/"
 #LOGIN_URL = "/accounts/login/"
 #LOGOUT_URL = "/accounts/logout/"
-#STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
-STATICFILES_DIRS = (
-	os.path.join(BASE_DIR, 'static'),
-	)
+#STATICFILES_DIRS = (
+#	os.path.join(BASE_DIR, 'static'),
+#	)
 
 SIMPLE_JWT = {
 	'ACCESS_TOKEN_LIFETIME': timedelta(days=3),
