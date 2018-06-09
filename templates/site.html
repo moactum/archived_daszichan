@@ -3,13 +3,11 @@
 {% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
       {% block htmlattrs %}lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}{% endblock %}
   {% block head %}
-    <meta charset="utf-8" />
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {{ block.super }}
     <meta name="Description" content="Etherscan allows you to explore and search the Ethereum blockchain for transactions, addresses, tokens, prices and other activities taking place on Ethereum (ETH)" />
     <meta name="author" content="daszichan.com" />
     <meta name="keywords" content="MOAC, Sharding, Smart Contract, SubChain, MicroChain, explorer, JingtumTech, blockchain, crypto, currency, 墨客, 分层, 智能合约, 子链, 众链之母, 井通科技, 井底望天, 大国游戏" />
-    <title>{% block title %}title{% endblock %}</title>
+    <title>{% block title %}MOACSCAN{% endblock %}</title>
     <link rel="stylesheet" href="{% get_static_prefix %}css/foundation.css">
     <link rel="stylesheet" href="{% get_static_prefix %}css/app20180605.css">
     <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/all.js" integrity="sha384-xymdQtn1n3lH2wcu0qhcdaOpQwyoarkgLVxC/wZ5q7h9gHtxICrpcaSUfygqZGOe" crossorigin="anonymous"></script>
@@ -23,10 +21,7 @@
     <script src="{% get_static_prefix %}js/app20180605.js"></script>
     {% endblock %}
     {% block extrajsscripts %}
-    <script src="https://code.highcharts.com/highcharts.src.js"></script>
     {% endblock %}
     {% block extradjangoloads %}
-    {% load chartit %}
-    {{ chart_list|load_charts:"chart,chart_balance" }}
     {% endblock %}
   {% endblock %}
