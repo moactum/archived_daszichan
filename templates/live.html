@@ -109,10 +109,10 @@
                    						 {% verbatim %}
                    						 <div id="scrollbar2" class="card-section overflow-scroll" style="height:30rem;">
                    						   <div v-for="msg in messages">
-                   						     <p><span><a :href="'/api/block/' + msg.data.block.number">Block {{ msg.data.block.number }}</a></span>&nbsp;&nbsp;Time {{ msg.data.block.timestamp }}&nbsp;&nbsp;#Txs {{ msg.data.block.transactions.length }} txns</p>
+                   						     <p><span><a :href="'https://live.moac.guru/api/block/' + msg.data.block.number">Block {{ msg.data.block.number }}</a></span>&nbsp;&nbsp;Time {{ msg.data.block.timestamp }}&nbsp;&nbsp;#Txs {{ msg.data.block.transactions.length }} txns</p>
                    						   <p class="">{{ msg.data.block.hash | truncate }}</p>
                    						   
-                   						   <p>Mined By <a :href="'/api/address/' + msg.data.block.miner" class='address-tag'>{{ msg.data.block.miner | truncate }}</a></p>
+                   						   <p>Mined By <a :href="'https://live.moac.guru/api/address/' + msg.data.block.miner" class='address-tag'>{{ msg.data.block.miner | truncate }}</a></p>
                    						   <hr>
                    						   </div>
                    						 </div>
@@ -127,8 +127,8 @@
                    						 {% verbatim %}
                    						 <div id="scrollbar" class="card-section overflow-scroll" style="height:30rem;">
                    						   <div v-for="tx in txs">
-                   						     <p><a :href="'/api/tx/' + tx.hash" title="Transaction Hash">{{ tx.hash | truncate }}</a></p>
-                   						     <p>From <a :href="'/api/address/' + tx.from">{{ tx.from | truncate }}</a> To <a :href="'/api/address/' + tx.to">{{ tx.to | truncate }}</a></p>
+                   						     <p><a :href="'https://live.moac.guru/api/tx/' + tx.hash" title="Transaction Hash">{{ tx.hash | truncate }}</a></p>
+                   						     <p>From <a :href="'https://live.moac.guru/api/address/' + tx.from">{{ tx.from | truncate }}</a> To <a :href="'https://live.moac.guru/api/address/' + tx.to">{{ tx.to | truncate }}</a></p>
                    						     <p>Amount {{ tx.value / 1e18 }} MOAC</p>
                    						     <hr>
                    						   </div>
