@@ -135,3 +135,10 @@ def homepage(_):
 
 	return render_to_response('index.html', {'chart_list': [ cht_ledger, cht_balance ], 'stat_ledger': stat_ledger, 'stat_coinmarket': stat_coinmarket})
 
+def live(_):
+	#NUM_LATEST = 5
+	stat_ledger = JsonStat.objects.get(metric='ledger')
+	stat_coinmarket = JsonStat.objects.get(metric='coinmarket')
+
+	return render_to_response('live.html', {'stat_ledger': stat_ledger, 'stat_coinmarket': stat_coinmarket})
+

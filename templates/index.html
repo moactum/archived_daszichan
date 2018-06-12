@@ -3,8 +3,8 @@
 {% get_current_language as LANGUAGE_CODE %}
 
   {% block main %}
-    <a name="Statistics"></a>
     <div class="grid-container full">
+      <a name="Statistics"></a>
       <div class="grid-x text-center">
         <div class="cell">
           <h3>{% trans "Statistics" %} ( {{ stat_ledger.timestamp|naturaltime }} )</h3>
@@ -405,6 +405,7 @@
     </div>
   {% endblock %}
     {% block extrajsscripts %}
+	{{ block.super }}
     <script src="https://code.highcharts.com/highcharts.src.js"></script>
     {% endblock %}
     {% block extradjangoloads %}

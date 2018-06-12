@@ -28,7 +28,7 @@ from rest_framework_simplejwt.views import (
 	TokenVerifyView,
 	TokenRefreshView,
 )
-from .views import homepage
+from .views import homepage, live
 # Serializers define the API representation.
 class UserSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
@@ -47,6 +47,7 @@ router.register(r'users', UserViewSet)
 
 urlpatterns = [
 	re_path('^$', homepage, name='home'),
+	path('live/', live, name='live'),
 	path('admin/doc/', include('django.contrib.admindocs.urls')),
 	path('admin/', admin.site.urls),
 	path('public/', my_admin_site_public.urls),
