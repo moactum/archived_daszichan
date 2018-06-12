@@ -9,81 +9,81 @@
             <div class="grid-x grid-margin-x small-up-2 medium-up-4 large-up-4">
               <div class="cell">
                 <div class="card">
-                  <div class="card-divider">
+                  <div class="card-divider align-center">
                     <h5>{% trans "Circulation" %}</h5>
                   </div>
                   <div class="card-section">
-                    <div><h5 class="font-bold">{{ stat_ledger.data.moac_circulation|intcomma }}</h5></div>
+                    <div><h5 class="font-bold text-center">{{ stat_ledger.data.moac_circulation|intcomma }}</h5></div>
                   </div>
                 </div>
               </div>
               <div class="cell">
                 <div class="card">
-                  <div class="card-divider">
+                  <div class="card-divider align-center">
                     <h5>{% trans "MoacMined" %}</h5>
                   </div>
                   <div class="card-section">
-                    <div><h5 class="font-bold">{{ stat_ledger.data.moac_mined|intcomma }}</h5></div>
+                    <div><h5 class="font-bold text-center">{{ stat_ledger.data.moac_mined|intcomma }}</h5></div>
                   </div>
                 </div>
               </div>
               <div class="cell">
                 <div class="card">
-                  <div class="card-divider">
+                  <div class="card-divider align-center">
                     <h5><a href="{% url 'public:moac_ledger_changelist' %}">{% trans "Height" %}</a></h5>
                   </div>
                   <div class="card-section">
-                    <div><h5 class="font-bold">{{ stat_ledger.data.ledgers|intcomma }}</h5></div>
+                    <div><h5 class="font-bold text-center">{{ stat_ledger.data.ledgers|intcomma }}</h5></div>
                   </div>
                 </div>
               </div>
               <div class="cell">
                 <div class="card">
-                  <div class="card-divider">
+                  <div class="card-divider align-center">
                     <h5><a href="{% url 'public:moac_transaction_changelist' %}">{% trans "Transactions" %}</a></h5>
                   </div>
                   <div class="card-section">
-                    <div><h5 class="font-bold">{{ stat_ledger.data.transactions|intcomma }}</h5></div>
+                    <div><h5 class="font-bold text-center">{{ stat_ledger.data.transactions|intcomma }}</h5></div>
                   </div>
                 </div>
               </div>
               <div class="cell">
                 <div class="card">
-                  <div class="card-divider">
+                  <div class="card-divider align-center">
                     <h5><a href="{% url 'public:moac_address_changelist' %}?is_contract__exact=0">{% trans "Wallets" %}</a></h5>
                   </div>
                   <div class="card-section">
-                    <div><h5 class="font-bold">{{ stat_ledger.data.wallets|intcomma }}</h5></div>
+                    <div><h5 class="font-bold text-center">{{ stat_ledger.data.wallets|intcomma }}</h5></div>
                   </div>
                 </div>
               </div>
               <div class="cell">
                 <div class="card">
-                  <div class="card-divider">
+                  <div class="card-divider align-center">
                     <h5><a href="{% url 'public:moac_address_changelist' %}?is_contract__exact=1">{% trans "Contracts" %}</a></h5>
                   </div>
                   <div class="card-section">
-                    <div><h5 class="font-bold">{{ stat_ledger.data.contracts|intcomma }}</h5></div>
+                    <div><h5 class="font-bold text-center">{{ stat_ledger.data.contracts|intcomma }}</h5></div>
                   </div>
                 </div>
               </div>
               <div class="cell">
                 <div class="card">
-                  <div class="card-divider">
+                  <div class="card-divider align-center">
                     <h5><a href="{% url 'public:moac_ledger_change' stat_ledger.data.ledgers|add:"-1" %}?is_contract__exact=1">{% trans "Difficulty" %}</a></h5>
                   </div>
                   <div class="card-section">
-                    <div><h5 class="font-bold">{{ stat_ledger.data.difficulty }} T</h5></div>
+                    <div><h5 class="font-bold text-center">{{ stat_ledger.data.difficulty }} T</h5></div>
                   </div>
                 </div>
               </div>        
               <div class="cell">
                 <div class="card">
-                  <div class="card-divider">
+                  <div class="card-divider align-center">
                     <h5>{% trans "Hashrate" %}</h5>
                   </div>
                   <div class="card-section">
-                    <div><h5 class="font-bold">{{ stat_ledger.data.hashrate }} T</h5></div>
+                    <div><h5 class="font-bold text-center">{{ stat_ledger.data.hashrate }} T</h5></div>
                   </div>
                 </div>
               </div>        
@@ -103,16 +103,16 @@
 							{% block main_block_tx %}
 							<div class="cell medium-6">
 									<div class="card">
-										<div class="card-divider">
+										<div class="card-divider align-center">
 											<h4><i class="fas fa-cubes"></i>&nbsp;Blocks</h4>
 										</div>
                    						 {% verbatim %}
-                   						 <div id="scrollbar2" class="card-section height-75" style="height:70%;overflow-x:hidden; overflow-y:scroll;">
+                   						 <div id="scrollbar2" class="card-section overflow-scroll" style="height:30rem;">
                    						   <div v-for="msg in messages">
-                   						     <p><span><a :href="'/api/block/' + msg.data.block.number">Block {{ msg.data.block.number }}</a></span>&nbsp;&nbsp;{{ msg.data.block.timestamp }}&nbsp;&nbsp;{{ msg.data.block.transactions.length }} txns</p>
-                   						   <p class="">{{ msg.data.block.hash }}</p>
+                   						     <p><span><a :href="'/api/block/' + msg.data.block.number">Block {{ msg.data.block.number }}</a></span>&nbsp;&nbsp;Time {{ msg.data.block.timestamp }}&nbsp;&nbsp;#Txs {{ msg.data.block.transactions.length }} txns</p>
+                   						   <p class="">{{ msg.data.block.hash | truncate }}</p>
                    						   
-                   						   <p>Mined By <a :href="'/api/address/' + msg.data.block.miner" class='address-tag'>{{ msg.data.block.miner }}</a></p>
+                   						   <p>Mined By <a :href="'/api/address/' + msg.data.block.miner" class='address-tag'>{{ msg.data.block.miner | truncate }}</a></p>
                    						   <hr>
                    						   </div>
                    						 </div>
@@ -121,13 +121,13 @@
 							</div>
 							<div class="cell medium-6">
 									<div class="card">
-										<div class="card-divider">
+										<div class="card-divider align-center">
 											<h4><i class="fas fa-list-alt"></i>&nbsp;Transactions</h4>
 										</div>
                    						 {% verbatim %}
-                   						 <div id="scrollbar" class="card-section height-75" style="height:70%;overflow-x:hidden; overflow-y:scroll;">
+                   						 <div id="scrollbar" class="card-section overflow-scroll" style="height:30rem;">
                    						   <div v-for="tx in txs">
-                   						     <p><a :href="'/api/tx/' + tx.hash" title="Transaction Hash">{{ tx.hash }}</a></p>
+                   						     <p><a :href="'/api/tx/' + tx.hash" title="Transaction Hash">{{ tx.hash | truncate }}</a></p>
                    						     <p>From <a :href="'/api/address/' + tx.from">{{ tx.from | truncate }}</a> To <a :href="'/api/address/' + tx.to">{{ tx.to | truncate }}</a></p>
                    						     <p>Amount {{ tx.value / 1e18 }} MOAC</p>
                    						     <hr>
