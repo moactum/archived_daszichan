@@ -109,7 +109,7 @@
                    						 {% verbatim %}
                    						 <div id="scrollbar2" class="card-section overflow-scroll" style="height:30rem;">
                    						   <div v-for="msg in messages">
-                   						     <p><span><a :href="'https://live.moac.guru/api/block/' + msg.data.block.number">Block {{ msg.data.block.number }}</a></span>&nbsp;&nbsp;Time {{ msg.data.block.timestamp }}&nbsp;&nbsp;#Txs {{ msg.data.block.transactions.length }} txns</p>
+                   						     <p><span><a :href="'https://live.moac.guru/api/block/' + msg.data.block.number">Block {{ msg.data.block.number }}</a></span>&nbsp;&nbsp;Time {{ msg.data.block.timestamp }}&nbsp;&nbsp;#Txs {{ msg.data.block.transactions.length }}</p>
                    						   <p class="">{{ msg.data.block.hash | truncate }}</p>
                    						   
                    						   <p>Mined By <a :href="'https://live.moac.guru/api/address/' + msg.data.block.miner" class='address-tag'>{{ msg.data.block.miner | truncate }}</a></p>
