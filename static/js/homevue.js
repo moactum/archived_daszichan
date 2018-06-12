@@ -10,6 +10,10 @@ function addTxs(list, msg) {
 		scrollTop: $('#tx-list').height()
 	}, 1000);
 }
+function addStat(info_stat, msg) {
+	info_stat.unshift(msg.data.info_stat);
+	console.log("..." + info_stat[0].data.ledgers);
+}
 
 $(function () {
 	var vmMessageList = new Vue({
@@ -34,6 +38,12 @@ $(function () {
 			},
 		}
 	});
+	var vmJsonStat = new Vue({
+		el: '#jsonstat',
+		data: {
+			info_stat: []
+		},
+	});
 
 	var ws_conncted = true;
 
@@ -45,6 +55,10 @@ $(function () {
 			if (msg.data.block) {
 				addMessage(vmMessageList.messages, msg);
 				addTxs(vmTxList.txs, msg);
+			}
+			if (msg.data.info_stat) {
+				addStat(vmJsonStat.info_stat, msg);
+				console.log(msg.data.info_stat.metric);
 			}
 		}
 	};

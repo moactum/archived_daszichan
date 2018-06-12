@@ -127,8 +127,9 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
 DATA_UPLOAD_MAX_MEMORY_SIZE = 26214400
 LOGIN_URL='/api/auth/login/'
 #DATABASE_ROUTERS = ['dbrouter.dbrouters.DbPostgresqlRouter',]
-DEBUG = False
 API_CHAIN3 = 'http://localhost:3003/api'
 LOCALE_PATHS = [
 	os.path.join(BASE_DIR, 'locale')
 ]
+#DEBUG = False
+DEBUG = True

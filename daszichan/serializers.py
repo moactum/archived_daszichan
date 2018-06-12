@@ -5,4 +5,4 @@ from jsonstore import models
 class JsonStatSerializer(serializers.ModelSerializer): 
 	class Meta: 
 		model = models.JsonStat
-		fields = ("metric", "timestamp","data")
+		fields = ("id","metric", "timestamp","data")
