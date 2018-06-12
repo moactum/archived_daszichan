@@ -10,7 +10,7 @@ INSTALLED_APPS += [
 	'django.contrib.humanize',
 	'django.contrib.admindocs',
 	'django.contrib.postgres',
-	'mptt',
+	#'mptt',
 	'corsheaders',
 	'rest_framework',
 	#'whitenoise',
