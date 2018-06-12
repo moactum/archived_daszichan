@@ -34,12 +34,12 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = User
 		fields = ('url', 'username', 'email', 'is_staff')
-
 # ViewSets define the view behavior.
 class UserViewSet(viewsets.ModelViewSet):
 	queryset = User.objects.all()
 	serializer_class = UserSerializer
 	#permission_classes = [ permissions.IsAuthenticated ]
+from . import apiviews
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
@@ -51,6 +51,7 @@ urlpatterns = [
 	path('admin/doc/', include('django.contrib.admindocs.urls')),
 	path('admin/', admin.site.urls),
 	path('public/', my_admin_site_public.urls),
+	path('api/stat/', apiviews.JsonStatList.as_view(), name="api_stat"),
 	path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 	path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
 	path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
