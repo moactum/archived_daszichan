@@ -1,5 +1,5 @@
 function addMessage(list, msg) {
-	list.unshift(msg);
+	list.unshift(msg.data.block);
 	$('#message-list').parent().animate({
 		scrollTop: $('#message-list').height()
 	}, 1000);
@@ -10,9 +10,8 @@ function addTxs(list, msg) {
 		scrollTop: $('#tx-list').height()
 	}, 1000);
 }
-function addStat(info_stat, msg) {
-	info_stat.unshift(msg.data.info_stat);
-	console.log("..." + info_stat[0].data.ledgers);
+function addStat(list, msg) {
+	list.unshift(msg.data.info_stat);
 }
 
 $(function () {
@@ -23,10 +22,11 @@ $(function () {
 		},
 		methods: {
 			block: function (msg) {
-				window.open(`/api/block/${msg.data.block.hash}`);
+				window.open(`/api/block/${msg.hash}`);
 			}
 		}
 	});
+	window.vmMessageList = vmMessageList;
 	var vmTxList = new Vue({
 		el: '#scrollbar',
 		data: {
@@ -38,18 +38,19 @@ $(function () {
 			},
 		}
 	});
+	window.vmTxList = vmTxList;
 	var vmJsonStat = new Vue({
 		el: '#jsonstat',
 		data: {
 			info_stat: []
-		},
+		}
 	});
+	window.vmJsonStat = vmJsonStat;
 
 	var ws_conncted = true;
 
 	ws.onmessage = function(event) {
 		var data = event.data;
-		console.log("received new websocket message");
 		var msg = JSON.parse(data);
 		if (msg.type === 'datafeed') {
 			if (msg.data.block) {
@@ -58,7 +59,6 @@ $(function () {
 			}
 			if (msg.data.info_stat) {
 				addStat(vmJsonStat.info_stat, msg);
-				console.log(msg.data.info_stat.metric);
 			}
 		}
 	};

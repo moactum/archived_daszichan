@@ -1,19 +1,21 @@
 {% extends "site.html" %}
 {% load humanize i18n static %}
   {% block main %}
-    <script> var ws = new WebSocket('wss://' + 'live.moac.guru' + '/ws/moac'); </script>
-    <a name="Statistics"></a>
+    <script> var ws = new WebSocket('wss://' + location.host + '/ws/moac'); </script>
     <div class="grid-container full">
+      <a name="Statistics"></a>
       <div class="grid-x">
         <div class="large-12 cell">
-            <div class="grid-x grid-margin-x small-up-2 medium-up-4 large-up-4">
+            <div id="jsonstat" class="grid-x grid-margin-x small-up-2 medium-up-4 large-up-4">
               <div class="cell">
                 <div class="card">
                   <div class="card-divider align-center">
                     <h5>{% trans "Circulation" %}</h5>
                   </div>
                   <div class="card-section">
-                    <div><h5 class="font-bold text-center">{{ stat_ledger.data.moac_circulation|intcomma }}</h5></div>
+				    {% verbatim %}
+                    <div><h5 class="font-bold text-center">{{ info_stat[0].data.moac_circulation }}</h5></div>
+				    {% endverbatim %}
                   </div>
                 </div>
               </div>
@@ -23,7 +25,9 @@
                     <h5>{% trans "MoacMined" %}</h5>
                   </div>
                   <div class="card-section">
-                    <div><h5 class="font-bold text-center">{{ stat_ledger.data.moac_mined|intcomma }}</h5></div>
+				    {% verbatim %}
+                    <div><h5 class="font-bold text-center">{{ info_stat[0].data.moac_mined }}</h5></div>
+				    {% endverbatim %}
                   </div>
                 </div>
               </div>
@@ -33,7 +37,9 @@
                     <h5><a href="{% url 'public:moac_ledger_changelist' %}">{% trans "Height" %}</a></h5>
                   </div>
                   <div class="card-section">
-                    <div><h5 class="font-bold text-center">{{ stat_ledger.data.ledgers|intcomma }}</h5></div>
+				    {% verbatim %}
+                    <div><h5 class="font-bold text-center">{{ info_stat[0].data.ledgers }}</h5></div>
+				    {% endverbatim %}
                   </div>
                 </div>
               </div>
@@ -43,7 +49,9 @@
                     <h5><a href="{% url 'public:moac_transaction_changelist' %}">{% trans "Transactions" %}</a></h5>
                   </div>
                   <div class="card-section">
-                    <div><h5 class="font-bold text-center">{{ stat_ledger.data.transactions|intcomma }}</h5></div>
+				    {% verbatim %}
+                    <div><h5 class="font-bold text-center">{{ info_stat[0].data.transactions }}</h5></div>
+				    {% endverbatim %}
                   </div>
                 </div>
               </div>
@@ -53,7 +61,9 @@
                     <h5><a href="{% url 'public:moac_address_changelist' %}?is_contract__exact=0">{% trans "Wallets" %}</a></h5>
                   </div>
                   <div class="card-section">
-                    <div><h5 class="font-bold text-center">{{ stat_ledger.data.wallets|intcomma }}</h5></div>
+				    {% verbatim %}
+                    <div><h5 class="font-bold text-center">{{ info_stat[0].data.wallets }}</h5></div>
+				    {% endverbatim %}
                   </div>
                 </div>
               </div>
@@ -63,7 +73,9 @@
                     <h5><a href="{% url 'public:moac_address_changelist' %}?is_contract__exact=1">{% trans "Contracts" %}</a></h5>
                   </div>
                   <div class="card-section">
-                    <div><h5 class="font-bold text-center">{{ stat_ledger.data.contracts|intcomma }}</h5></div>
+				    {% verbatim %}
+                    <div><h5 class="font-bold text-center">{{ info_stat[0].data.contracts }}</h5></div>
+				    {% endverbatim %}
                   </div>
                 </div>
               </div>
@@ -73,7 +85,9 @@
                     <h5><a href="{% url 'public:moac_ledger_change' stat_ledger.data.ledgers|add:"-1" %}?is_contract__exact=1">{% trans "Difficulty" %}</a></h5>
                   </div>
                   <div class="card-section">
-                    <div><h5 class="font-bold text-center">{{ stat_ledger.data.difficulty }} T</h5></div>
+				    {% verbatim %}
+                    <div><h5 class="font-bold text-center">{{ info_stat[0].data.difficulty }} T</h5></div>
+				    {% endverbatim %}
                   </div>
                 </div>
               </div>        
@@ -83,7 +97,9 @@
                     <h5>{% trans "Hashrate" %}</h5>
                   </div>
                   <div class="card-section">
-                    <div><h5 class="font-bold text-center">{{ stat_ledger.data.hashrate }} T</h5></div>
+				    {% verbatim %}
+                    <div><h5 class="font-bold text-center">{{ info_stat[0].data.hashrate }} T</h5></div>
+				    {% endverbatim %}
                   </div>
                 </div>
               </div>        
@@ -109,10 +125,10 @@
                    						 {% verbatim %}
                    						 <div id="scrollbar2" class="card-section overflow-scroll" style="height:30rem;">
                    						   <div v-for="msg in messages">
-                   						     <p><span><a :href="'https://live.moac.guru/api/block/' + msg.data.block.number">Block {{ msg.data.block.number }}</a></span>&nbsp;&nbsp;Time {{ msg.data.block.timestamp }}&nbsp;&nbsp;#Txs {{ msg.data.block.transactions.length }}</p>
-                   						   <p class="">{{ msg.data.block.hash | truncate }}</p>
+                   						     <p><span><a :href="'/api/block/' + msg.number">Block {{ msg.number }}</a></span>&nbsp;&nbsp;Time {{ msg.timestamp }}&nbsp;&nbsp;#Txs {{ msg.transactions.length }}</p>
+                   						   <p class="">{{ msg.hash | truncate }}</p>
                    						   
-                   						   <p>Mined By <a :href="'https://live.moac.guru/api/address/' + msg.data.block.miner" class='address-tag'>{{ msg.data.block.miner | truncate }}</a></p>
+                   						   <p>Mined By <a :href="'/api/address/' + msg.miner" class='address-tag'>{{ msg.miner | truncate }}</a></p>
                    						   <hr>
                    						   </div>
                    						 </div>
@@ -127,8 +143,8 @@
                    						 {% verbatim %}
                    						 <div id="scrollbar" class="card-section overflow-scroll" style="height:30rem;">
                    						   <div v-for="tx in txs">
-                   						     <p><a :href="'https://live.moac.guru/api/tx/' + tx.hash" title="Transaction Hash">{{ tx.hash | truncate }}</a></p>
-                   						     <p>From <a :href="'https://live.moac.guru/api/address/' + tx.from">{{ tx.from | truncate }}</a> To <a :href="'https://live.moac.guru/api/address/' + tx.to">{{ tx.to | truncate }}</a></p>
+                   						     <p><a :href="'/api/tx/' + tx.hash" title="Transaction Hash">{{ tx.hash | truncate }}</a></p>
+                   						     <p>From <a :href="'/api/address/' + tx.from">{{ tx.from | truncate }}</a> To <a :href="'/api/address/' + tx.to">{{ tx.to | truncate }}</a></p>
                    						     <p>Amount {{ tx.value / 1e18 }} MOAC</p>
                    						     <hr>
                    						   </div>
