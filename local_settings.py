@@ -13,7 +13,7 @@ INSTALLED_APPS += [
 	#'mptt',
 	'corsheaders',
 	'rest_framework',
-	#'whitenoise',
+	'whitenoise',
 	'common',
 	'profile.apps.ProfileConfig',
 	'jsonstore',
@@ -109,7 +109,7 @@ REST_FRAMEWORK = {
 	#'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
 	#'PAGE_SIZE': 100
 }
-#STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 #CORS_ORIGIN_ALLOW_ALL = True
 #CORS_ORIGIN_WHITELIST = (
 #	'localhost',
